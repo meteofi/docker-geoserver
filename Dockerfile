@@ -58,6 +58,11 @@ RUN wget -c http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSER
     unzip -o ~/geoserver-css-plugin.zip -d /usr/share/geoserver/webapps/geoserver/WEB-INF/lib/ && \
     rm ~/geoserver-css-plugin.zip
 
+# Get YSLD Styling plugin
+RUN wget -c http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSERVER_VERSION/extensions/geoserver-$GEOSERVER_VERSION-ysld-plugin.zip -O ~/geoserver-ysld-plugin.zip && \
+    unzip -o ~/geoserver-ysld-plugin.zip -d /usr/share/geoserver/webapps/geoserver/WEB-INF/lib/ && \
+    rm ~/geoserver-ysld-plugin.zip
+
 # Get WPS plugin
 RUN wget -c http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSERVER_VERSION/extensions/geoserver-$GEOSERVER_VERSION-wps-plugin.zip -O ~/geoserver-wps-plugin.zip && \
     unzip -o ~/geoserver-wps-plugin.zip -d /usr/share/geoserver/webapps/geoserver/WEB-INF/lib/ && \
