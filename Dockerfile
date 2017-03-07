@@ -1,13 +1,14 @@
 FROM openjdk:8-jre
-MAINTAINER mikko@meteo.fi
+LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
+
+# persistent / runtime deps
+RUN apt-get update && apt-get install -y --no-install-recommends libnetcdfc++4 && rm -r /var/lib/apt/lists/*
 
 ENV GEOSERVER_VERSION 2.10.2
 ENV GEOSERVER_PLUGINS css grib netcdf pyramid wps ysld
 ENV GEOSERVER_HOME /usr/share/geoserver
 #ENV GEOSERVER_DATA_DIR /data/geoserver
-ENV JAVA_OPTS -Xbootclasspath/a:${JAVA_HOME}/jre/lib/ext/marlin-0.7.4-Unsafe.jar -Xbootclasspath/p:${JAVA_HOME}/jre/lib/ext/marlin-0.7.4-Unsafe-sun-java2d.jar -Dsun.java2d.renderer=org.marlin.pisces.PiscesRenderingEngine
-
-RUN apt-get update && apt-get install -y --no-install-recommends libnetcdfc++4 && apt-get clean && rm -rf /var/lib/apt/lists/*
+ENV JAVA_OPTS -Xbootclasspath/a:${JAVA_HOME}/jre/lib/ext/marlin-0.7.4-Unsafe.jar -Xbootclasspath/p:${JAVA_HOME}/jre/lib/ext/marlin-0.7.4-Unsafe-sun-java2d.jar -Dsun.java2d.renderer=org.marlin.pisces.PiscesRenderingEngine -XX:+UseG1GC
 
 # Install native JAI, ImageIO and Marlin Renderer
 RUN \
@@ -32,12 +33,13 @@ RUN \
 
 # Install GeoServer
 RUN wget -nv http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSERVER_VERSION/geoserver-$GEOSERVER_VERSION-bin.zip && \
-    unzip geoserver-$GEOSERVER_VERSION-bin.zip -d /usr/share && mv -v /usr/share/geoserver* /usr/share/geoserver && \
+    unzip geoserver-$GEOSERVER_VERSION-bin.zip -d /usr/share && mv -v /usr/share/geoserver* $GEOSERVER_HOME && \
     rm geoserver-$GEOSERVER_VERSION-bin.zip && \
+    sed -e 's/>PARTIAL-BUFFER2</>SPEED</g' -i $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml && \
     # Remove old JAI from geoserver
-    rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_codec-1.1.3.jar && \
-    rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_core-1.1.3.jar && \
-    rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_imageio-1.1.jar
+    rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_codec-*.jar && \
+    rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_core-*jar && \
+    rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_imageio-*.jar
 
 # Install GeoServer Plugins
 RUN for PLUGIN in ${GEOSERVER_PLUGINS}; \
