@@ -8,6 +8,7 @@ ENV GEOSERVER_VERSION 2.10.2
 ENV GEOSERVER_PLUGINS css grib netcdf pyramid wps ysld
 ENV GEOSERVER_HOME /usr/share/geoserver
 #ENV GEOSERVER_DATA_DIR /data/geoserver
+ENV GEOSERVER_NODE_OPTS 'id:$host_name'
 ENV JAVA_OPTS -Xbootclasspath/a:${JAVA_HOME}/jre/lib/ext/marlin-0.7.4-Unsafe.jar -Xbootclasspath/p:${JAVA_HOME}/jre/lib/ext/marlin-0.7.4-Unsafe-sun-java2d.jar -Dsun.java2d.renderer=org.marlin.pisces.PiscesRenderingEngine -XX:+UseG1GC
 
 # Install native JAI, ImageIO and Marlin Renderer
