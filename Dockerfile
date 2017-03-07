@@ -27,7 +27,7 @@ RUN \
 #
 # GEOSERVER INSTALLATION
 #
-ENV GEOSERVER_VERSION 2.10.2
+ENV GEOSERVER_VERSION 2.9.4
 
 # Get GeoServer
 RUN wget -c http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSERVER_VERSION/geoserver-$GEOSERVER_VERSION-bin.zip -O ~/geoserver.zip && \
@@ -57,11 +57,6 @@ RUN wget -c http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSER
 RUN wget -c http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSERVER_VERSION/extensions/geoserver-$GEOSERVER_VERSION-css-plugin.zip -O ~/geoserver-css-plugin.zip && \
     unzip -o ~/geoserver-css-plugin.zip -d /usr/share/geoserver/webapps/geoserver/WEB-INF/lib/ && \
     rm ~/geoserver-css-plugin.zip
-
-# Get YSLD Styling plugin
-RUN wget -c http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSERVER_VERSION/extensions/geoserver-$GEOSERVER_VERSION-ysld-plugin.zip -O ~/geoserver-ysld-plugin.zip && \
-    unzip -o ~/geoserver-ysld-plugin.zip -d /usr/share/geoserver/webapps/geoserver/WEB-INF/lib/ && \
-    rm ~/geoserver-ysld-plugin.zip
 
 # Get WPS plugin
 RUN wget -c http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSERVER_VERSION/extensions/geoserver-$GEOSERVER_VERSION-wps-plugin.zip -O ~/geoserver-wps-plugin.zip && \
