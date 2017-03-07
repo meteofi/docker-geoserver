@@ -5,7 +5,9 @@ Additional formats and publication options are available including Web Map Tile 
 
 This docker image uses openJDK 1.8, native JAI, ImageIO and Marlin Renderer.
 
-Included plugins: Image Pyramid, GRIB, NetCDF, CSS Styling and WPS
+Included plugins: Image Pyramid, GRIB, NetCDF, CSS Styling, YSLD Styling and WPS
+
+Image follows recommendations in http://docs.geoserver.org/stable/en/user/production/ where applicable.
 
 ## Installation
 ```
@@ -18,7 +20,7 @@ cd docker-geoserver
 docker build --rm -t geoserver .
 ```
 
-## Run
+## Quick Start
 ```
 docker run -d --name geoserver -p 8080:8080  meteofi/geoserver
 ```
