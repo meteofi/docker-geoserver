@@ -7,6 +7,8 @@ This docker image uses openJDK 1.8, native JAI, ImageIO and Marlin Renderer.
 
 Included plugins: Image Pyramid, GRIB, NetCDF, CSS Styling, YSLD Styling and WPS
 
+Included additional fonts: [Noto](https://www.google.com/get/noto/), [Open Sans](https://fonts.google.com/specimen/Open+Sans), [Roboto](https://fonts.google.com/specimen/Roboto), [Ubuntu](https://fonts.google.com/specimen/Ubuntu) and [Lato](https://fonts.google.com/specimen/Lato).
+
 Image follows recommendations in http://docs.geoserver.org/stable/en/user/production/ where applicable.
 
 ## Installation
