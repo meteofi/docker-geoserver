@@ -4,12 +4,33 @@ LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
 # persistent / runtime deps
 RUN apt-get update && apt-get install -y --no-install-recommends libnetcdfc++4 && rm -r /var/lib/apt/lists/*
 
+ENV NOTO_FONTS NotoSans-unhinted NotoSerif-unhinted NotoMono-hinted
+ENV GOOGLE_FONTS Open%20Sans Roboto Lato Ubuntu
 ENV GEOSERVER_VERSION 2.10.2
 ENV GEOSERVER_PLUGINS css grib netcdf pyramid wps ysld
 ENV GEOSERVER_HOME /usr/share/geoserver
 #ENV GEOSERVER_DATA_DIR /data/geoserver
 ENV GEOSERVER_NODE_OPTS 'id:$host_name'
 ENV JAVA_OPTS -Xbootclasspath/a:${JAVA_HOME}/jre/lib/ext/marlin-0.7.4-Unsafe.jar -Xbootclasspath/p:${JAVA_HOME}/jre/lib/ext/marlin-0.7.4-Unsafe-sun-java2d.jar -Dsun.java2d.renderer=org.marlin.pisces.PiscesRenderingEngine -XX:+UseG1GC
+
+# Install Google Noto fonts
+RUN mkdir -p /usr/share/fonts/truetype/noto && \
+    for FONT in ${NOTO_FONTS}; \
+    do \
+        wget -nv https://noto-website-2.storage.googleapis.com/pkgs/${FONT}.zip && \
+    	unzip -o ${FONT}.zip -d /usr/share/fonts/truetype/noto && \
+    	rm -f ${FONT}.zip ; \
+    done
+
+# Install Google Fonts
+RUN \
+    for FONT in $GOOGLE_FONTS; \
+    do \
+        mkdir -p /usr/share/fonts/truetype/${FONT} && \
+        wget -nv -O ${FONT}.zip "https://fonts.google.com/download?family=${FONT}" && \
+    	unzip -o ${FONT}.zip -d /usr/share/fonts/truetype/${FONT} && \
+    	rm -f ${FONT}.zip ; \
+    done
 
 # Install native JAI, ImageIO and Marlin Renderer
 RUN \
