@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends libnetcdfc++4 &
 ENV NOTO_FONTS NotoSans-unhinted NotoSerif-unhinted NotoMono-hinted
 ENV GOOGLE_FONTS Open%20Sans Roboto Lato Ubuntu
 ENV GEOSERVER_VERSION 2.11-RC1
-ENV GEOSERVER_PLUGINS css grib netcdf pyramid wps ysld
+ENV GEOSERVER_PLUGINS css grib netcdf pyramid vectortiles wps ysld
 ENV GEOSERVER_HOME /usr/share/geoserver
 #ENV GEOSERVER_DATA_DIR /data/geoserver
 ENV GEOSERVER_NODE_OPTS 'id:$host_name'
