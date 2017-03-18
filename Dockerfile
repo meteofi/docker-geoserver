@@ -1,67 +1,75 @@
 FROM openjdk:8-jre
-MAINTAINER mikko@meteo.fi
+LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
 
+# persistent / runtime deps
+RUN apt-get update && apt-get install -y --no-install-recommends libnetcdfc++4 && rm -r /var/lib/apt/lists/*
+
+ENV NOTO_FONTS NotoSans-unhinted NotoSerif-unhinted NotoMono-hinted
+ENV GOOGLE_FONTS Open%20Sans Roboto Lato Ubuntu
+ENV GEOSERVER_VERSION 2.9.4
+ENV GEOSERVER_PLUGINS css grib netcdf pyramid wps
 ENV GEOSERVER_HOME /usr/share/geoserver
 #ENV GEOSERVER_DATA_DIR /data/geoserver
-ENV JAVA_OPTS -Xbootclasspath/a:${JAVA_HOME}/jre/lib/ext/marlin-0.7.4-Unsafe.jar -Xbootclasspath/p:${JAVA_HOME}/jre/lib/ext/marlin-0.7.4-Unsafe-sun-java2d.jar -Dsun.java2d.renderer=org.marlin.pisces.PiscesRenderingEngine
+ENV GEOSERVER_NODE_OPTS 'id:$host_name'
+ENV JAVA_OPTS -Xbootclasspath/a:${JAVA_HOME}/jre/lib/ext/marlin-0.7.4-Unsafe.jar -Xbootclasspath/p:${JAVA_HOME}/jre/lib/ext/marlin-0.7.4-Unsafe-sun-java2d.jar -Dsun.java2d.renderer=org.marlin.pisces.PiscesRenderingEngine -XX:+UseG1GC
 
-RUN apt-get update && apt-get install -y --no-install-recommends libnetcdfc++4 && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Install Google Noto fonts
+RUN mkdir -p /usr/share/fonts/truetype/noto && \
+    for FONT in ${NOTO_FONTS}; \
+    do \
+        wget -nv https://noto-website-2.storage.googleapis.com/pkgs/${FONT}.zip && \
+    	unzip -o ${FONT}.zip -d /usr/share/fonts/truetype/noto && \
+    	rm -f ${FONT}.zip ; \
+    done
 
-# Get native JAI, ImageIO and Marlin Renderer
+# Install Google Fonts
+RUN \
+    for FONT in $GOOGLE_FONTS; \
+    do \
+        mkdir -p /usr/share/fonts/truetype/${FONT} && \
+        wget -nv -O ${FONT}.zip "https://fonts.google.com/download?family=${FONT}" && \
+    	unzip -o ${FONT}.zip -d /usr/share/fonts/truetype/${FONT} && \
+    	rm -f ${FONT}.zip ; \
+    done
+
+# Install native JAI, ImageIO and Marlin Renderer
 RUN \
     cd $JAVA_HOME && \
-    wget http://download.java.net/media/jai/builds/release/1_1_3/jai-1_1_3-lib-linux-amd64-jre.bin && \
+    wget -nv http://download.java.net/media/jai/builds/release/1_1_3/jai-1_1_3-lib-linux-amd64-jre.bin && \
     echo "yes" | sh jai-1_1_3-lib-linux-amd64-jre.bin && \
     rm jai-1_1_3-lib-linux-amd64-jre.bin && \
     # ImageIO
     cd $JAVA_HOME && \
     export _POSIX2_VERSION=199209 &&\
-    wget http://download.java.net/media/jai-imageio/builds/release/1.1/jai_imageio-1_1-lib-linux-amd64-jre.bin && \
+    wget -nv http://download.java.net/media/jai-imageio/builds/release/1.1/jai_imageio-1_1-lib-linux-amd64-jre.bin && \
     echo "yes" | sh jai_imageio-1_1-lib-linux-amd64-jre.bin && \
     rm jai_imageio-1_1-lib-linux-amd64-jre.bin && \
     # Get Marlin Renderer
     cd $JAVA_HOME/lib/ext/ && \
-    wget https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe.jar && \
-    wget https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe-sun-java2d.jar
+    wget -nv https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe.jar && \
+    wget -nv https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe-sun-java2d.jar
 
 #
 # GEOSERVER INSTALLATION
 #
-ENV GEOSERVER_VERSION 2.9.4
 
-# Get GeoServer
-RUN wget -c http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSERVER_VERSION/geoserver-$GEOSERVER_VERSION-bin.zip -O ~/geoserver.zip && \
-    unzip ~/geoserver.zip -d /usr/share && mv -v /usr/share/geoserver* /usr/share/geoserver && \
-    rm ~/geoserver.zip && \
+# Install GeoServer
+RUN wget -nv http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSERVER_VERSION/geoserver-$GEOSERVER_VERSION-bin.zip && \
+    unzip geoserver-$GEOSERVER_VERSION-bin.zip -d /usr/share && mv -v /usr/share/geoserver* $GEOSERVER_HOME && \
+    rm geoserver-$GEOSERVER_VERSION-bin.zip && \
+    sed -e 's/>PARTIAL-BUFFER2</>SPEED</g' -i $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml && \
     # Remove old JAI from geoserver
-    rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_codec-1.1.3.jar && \
-    rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_core-1.1.3.jar && \
-    rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_imageio-1.1.jar
+    rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_codec-*.jar && \
+    rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_core-*jar && \
+    rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_imageio-*.jar
 
-# Get GRIB plugin
-RUN wget -c http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSERVER_VERSION/extensions/geoserver-$GEOSERVER_VERSION-grib-plugin.zip -O ~/geoserver-grib-plugin.zip && \
-    unzip -o ~/geoserver-grib-plugin.zip -d /usr/share/geoserver/webapps/geoserver/WEB-INF/lib/ && \
-    rm ~/geoserver-grib-plugin.zip
-
-# Get Image Pyramid plugin
-RUN wget -c http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSERVER_VERSION/extensions/geoserver-$GEOSERVER_VERSION-pyramid-plugin.zip -O ~/geoserver-pyramid-plugin.zip && \
-    unzip -o ~/geoserver-pyramid-plugin.zip -d /usr/share/geoserver/webapps/geoserver/WEB-INF/lib/ && \
-    rm ~/geoserver-pyramid-plugin.zip
-
-# Get Image NetCDF plugin
-RUN wget -c http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSERVER_VERSION/extensions/geoserver-$GEOSERVER_VERSION-netcdf-plugin.zip -O ~/geoserver-netcdf-plugin.zip && \
-    unzip -o ~/geoserver-netcdf-plugin.zip -d /usr/share/geoserver/webapps/geoserver/WEB-INF/lib/ && \
-    rm ~/geoserver-netcdf-plugin.zip
-
-# Get CSS Styling plugin
-RUN wget -c http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSERVER_VERSION/extensions/geoserver-$GEOSERVER_VERSION-css-plugin.zip -O ~/geoserver-css-plugin.zip && \
-    unzip -o ~/geoserver-css-plugin.zip -d /usr/share/geoserver/webapps/geoserver/WEB-INF/lib/ && \
-    rm ~/geoserver-css-plugin.zip
-
-# Get WPS plugin
-RUN wget -c http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSERVER_VERSION/extensions/geoserver-$GEOSERVER_VERSION-wps-plugin.zip -O ~/geoserver-wps-plugin.zip && \
-    unzip -o ~/geoserver-wps-plugin.zip -d /usr/share/geoserver/webapps/geoserver/WEB-INF/lib/ && \
-    rm ~/geoserver-wps-plugin.zip
+# Install GeoServer Plugins
+RUN for PLUGIN in ${GEOSERVER_PLUGINS}; \
+    do \
+      wget -nv http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSERVER_VERSION/extensions/geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip && \
+      unzip -o geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip -d /usr/share/geoserver/webapps/geoserver/WEB-INF/lib/ && \
+      rm geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip ; \
+    done
 
 # Expose GeoServer's default port
 EXPOSE 8080
