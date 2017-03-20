@@ -14,7 +14,8 @@ Additional formats and publication options are available including Web Map Tile 
 * includes plugins: CSS Styling, GRIB, Image Pyramid, NetCDF, Vector Tiling, WPS and YSLD Styling 
 * includes additional fonts: [Noto](https://www.google.com/get/noto/), [Open Sans](https://fonts.google.com/specimen/Open+Sans), [Roboto](https://fonts.google.com/specimen/Roboto), [Ubuntu](https://fonts.google.com/specimen/Ubuntu) and [Lato](https://fonts.google.com/specimen/Lato) for better labeling
 * image follows recommendations in http://docs.geoserver.org/stable/en/user/production/ where applicable
-* docker health check feature
+* docker health check
+* CORS enabled
 
 ### INSTALL
 ```
