@@ -4,15 +4,13 @@ LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
 # persistent / runtime deps
 RUN apt-get update && apt-get install -y --no-install-recommends libnetcdfc++4 && rm -r /var/lib/apt/lists/*
 
-ENV NOTO_FONTS NotoSans-unhinted NotoSerif-unhinted NotoMono-hinted
-ENV GOOGLE_FONTS Open%20Sans Roboto Lato Ubuntu
-ENV GEOSERVER_VERSION 2.11-RC1
-ENV GEOSERVER_PLUGINS css grib netcdf pyramid vectortiles wps ysld
-ENV GEOSERVER_HOME /usr/share/geoserver
-#ENV GEOSERVER_DATA_DIR /data/geoserver
-ENV GEOSERVER_NODE_OPTS 'id:$host_name'
-ENV JAVA_OPTS -Xbootclasspath/a:${JAVA_HOME}/jre/lib/ext/marlin-0.7.4-Unsafe.jar -Xbootclasspath/p:${JAVA_HOME}/jre/lib/ext/marlin-0.7.4-Unsafe-sun-java2d.jar -Dsun.java2d.renderer=org.marlin.pisces.PiscesRenderingEngine -XX:+UseG1GC
-
+ENV NOTO_FONTS="NotoSans-unhinted NotoSerif-unhinted NotoMono-hinted" \
+    GOOGLE_FONTS="Open%20Sans Roboto Lato Ubuntu" \
+    GEOSERVER_VERSION="2.11-RC1" \
+    GEOSERVER_PLUGINS="css grib netcdf pyramid vectortiles wps ysld" \
+    GEOSERVER_HOME="/usr/share/geoserver" \
+    GEOSERVER_NODE_OPTS='id:$host_name' \
+    JAVA_OPTS="-Xbootclasspath/a:${JAVA_HOME}/jre/lib/ext/marlin-0.7.4-Unsafe.jar -Xbootclasspath/p:${JAVA_HOME}/jre/lib/ext/marlin-0.7.4-Unsafe-sun-java2d.jar -Dsun.java2d.renderer=org.marlin.pisces.PiscesRenderingEngine -XX:+UseG1GC"
 # Install Google Noto fonts
 RUN mkdir -p /usr/share/fonts/truetype/noto && \
     for FONT in ${NOTO_FONTS}; \
@@ -61,7 +59,8 @@ RUN wget -nv http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSE
     # Remove old JAI from geoserver
     rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_codec-*.jar && \
     rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_core-*jar && \
-    rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_imageio-*.jar
+    rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_imageio-*.jar && \
+    perl -i -0777 -pe 's/<!--\s*?(<filter-mapping.*?cross-origin.*?\/filter-mapping>)\s*?-->/$1/s' $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml
 
 # Install GeoServer Plugins
 RUN for PLUGIN in ${GEOSERVER_PLUGINS}; \
