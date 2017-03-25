@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends libnetcdfc++4 &
 
 ENV NOTO_FONTS="NotoSans-unhinted NotoSerif-unhinted NotoMono-hinted" \
     GOOGLE_FONTS="Open%20Sans Roboto Lato Ubuntu" \
-    GEOSERVER_VERSION="2.11-RC1" \
+    GEOSERVER_VERSION="2.11.0" \
     GEOSERVER_PLUGINS="css grib netcdf pyramid vectortiles wps ysld" \
     GEOSERVER_HOME="/usr/share/geoserver" \
     GEOSERVER_NODE_OPTS='id:$host_name' \
