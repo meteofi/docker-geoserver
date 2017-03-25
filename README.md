@@ -5,7 +5,7 @@ Additional formats and publication options are available including Web Map Tile 
 
 ### Supported tags and respective **`Dockerfile`** links
 * `2.11.0`, `2.11`, `stable`, `latest` ([2.11/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/2.11/Dockerfile))
-* `2.10.2`, `2.10`, `maintenance` ([2.10.2/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/2.10.2/Dockerfile))
+* `2.10.2`, `2.10`, `maintenance` ([2.10/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/2.10/Dockerfile))
 * `2.9.4`, `2.9` ([2.9.4/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/2.9.4/Dockerfile))
 
 ### FEATURES
