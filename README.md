@@ -26,7 +26,7 @@ or build it yourself
 ```
 git clone https://github.com/meteofi/docker-geoserver.git
 cd docker-geoserver
-docker build --rm -t geoserver .
+docker build --rm -t meteofi/geoserver .
 ```
 
 ### QUICK START
