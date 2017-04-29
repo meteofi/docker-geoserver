@@ -45,7 +45,8 @@ RUN \
     # Get Marlin Renderer
     cd $JAVA_HOME/lib/ext/ && \
     wget -nv https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe.jar && \
-    wget -nv https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe-sun-java2d.jar
+    wget -nv https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe-sun-java2d.jar && \
+    wget -nv https://jdbc.postgresql.org/download/postgresql-42.0.0.jar
 
 #
 # GEOSERVER INSTALLATION
@@ -60,9 +61,20 @@ RUN wget -nv http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSE
     rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_codec-*.jar && \
     rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_core-*jar && \
     rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_imageio-*.jar && \
-    wget -nv -P $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/ http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-servlets/9.2.13.v20150730/jetty-servlets-9.2.13.v20150730.jar && \
+    echo "--module=servlets" >> $GEOSERVER_HOME/start.ini && \
+    echo "--module=jndi"    >> $GEOSERVER_HOME/start.ini && \
+    echo '[depend]\nserver\nplus\nutil\n[xml]\ndata_dir/jetty-jndi.xml\n[lib]\nlib/jetty-jndi-${jetty.version}.jar' > $GEOSERVER_HOME/modules/jndi.mod && \
+    echo '[depend]\nserver\n[lib]\nlib/jetty-plus-${jetty.version}.jar' > $GEOSERVER_HOME/modules/plus.mod && \
+    echo '[depend]\nserver\n[lib]\nlib/jetty-util-${jetty.version}.jar' > $GEOSERVER_HOME/modules/util.mod && \
+    echo '[depend]\nserver\n[lib]\nlib/jetty-servlets-${jetty.version}.jar' > $GEOSERVER_HOME/modules/servlets.mod && \
+    wget -nv -P $GEOSERVER_HOME/lib/ http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-plus/9.2.13.v20150730/jetty-plus-9.2.13.v20150730.jar && \
+    wget -nv -P $GEOSERVER_HOME/lib/ http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-jndi/9.2.13.v20150730/jetty-jndi-9.2.13.v20150730.jar && \
+    wget -nv -P $GEOSERVER_HOME/lib/ http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-servlets/9.2.13.v20150730/jetty-servlets-9.2.13.v20150730.jar && \
+    wget -nv -P $GEOSERVER_HOME/lib/ http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-util/9.2.13.v20150730/jetty-util-9.2.13.v20150730.jar && \
     perl -i -0777 -pe 's/<!--\s*?(<filter.*?cross-origin.*?\/filter>)\s*?-->/$1/s' $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml && \
     perl -i -0777 -pe 's/<!--\s*?(<filter-mapping.*?cross-origin.*?\/filter-mapping>)\s*?-->/$1/s' $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml
+
+COPY jetty-jndi.xml $GEOSERVER_HOME/data_dir/
 
 # Install GeoServer Plugins
 RUN for PLUGIN in ${GEOSERVER_PLUGINS}; \
