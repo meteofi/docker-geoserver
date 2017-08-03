@@ -4,7 +4,7 @@ GeoServer is a OGC compliant implementation of a number of open standards such a
 Additional formats and publication options are available including Web Map Tile Service (WMTS) and extensions for Catalogue Service (CSW) and Web Processing Service (WPS).
 
 ### Supported tags and respective **`Dockerfile`** links
-* `2.11.1`, `2.11`, `stable`, `latest` ([2.11/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/2.11/Dockerfile))
+* `2.11.2`, `2.11`, `stable`, `latest` ([2.11/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/2.11/Dockerfile))
 * `2.10.3`, `2.10`, `maintenance` ([2.10/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/2.10/Dockerfile))
 * `2.9.4`, `2.9` ([2.9.4/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/2.9.4/Dockerfile))
 
