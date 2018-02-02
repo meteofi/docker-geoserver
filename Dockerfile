@@ -87,7 +87,7 @@ RUN for PLUGIN in ${GEOSERVER_PLUGINS}; \
 # Expose GeoServer's default port
 EXPOSE 8080
 
-HEALTHCHECK --interval=5m --timeout=3s \
+HEALTHCHECK --interval=1m --timeout=3s \
     CMD curl -f "http://localhost:8080/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities" || exit 1
 
 COPY docker-entrypoint.sh /
