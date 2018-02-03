@@ -1,4 +1,4 @@
-FROM openjdk:8-jre
+FROM openjdk:8-jre-slim
 LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
 
 # persistent / runtime deps
