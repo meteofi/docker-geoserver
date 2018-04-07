@@ -47,4 +47,3 @@ docker run -d --restart=always --name geoserver -p 80:8080 \
 ```
 
 data_dir must have sufficient permissions for containert to have read write access.
-
