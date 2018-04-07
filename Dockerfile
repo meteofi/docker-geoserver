@@ -53,7 +53,7 @@ RUN \
 #
 
 # Install GeoServer
-RUN curl -sS -L -O http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSERVER_VERSION/geoserver-$GEOSERVER_VERSION-bin.zip && \
+RUN curl -sS -L -O http://sourceforge.net/projects/geoserver/files/GeoServer/$GEOSERVER_VERSION/geoserver-$GEOSERVER_VERSION-bin.zip && \
     unzip geoserver-$GEOSERVER_VERSION-bin.zip -d /usr/share && mv -v /usr/share/geoserver* $GEOSERVER_HOME && \
     rm geoserver-$GEOSERVER_VERSION-bin.zip && \
     sed -e 's/>PARTIAL-BUFFER2</>SPEED</g' -i $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml && \
@@ -80,7 +80,7 @@ COPY jetty-jndi.xml $GEOSERVER_HOME/data_dir/
 # Install GeoServer Plugins
 RUN for PLUGIN in ${GEOSERVER_PLUGINS}; \
     do \
-      curl -sS -L -O http://downloads.sourceforge.net/project/geoserver/GeoServer/$GEOSERVER_VERSION/extensions/geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip && \
+      curl -sS -L -O http://sourceforge.net/projects/geoserver/files/GeoServer/$GEOSERVER_VERSION/extensions/geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip && \
       unzip -o geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip -d /usr/share/geoserver/webapps/geoserver/WEB-INF/lib/ && \
       rm geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip ; \
     done
