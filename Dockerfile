@@ -44,9 +44,9 @@ RUN \
     rm jai_imageio-1_1-lib-linux-amd64-jre.bin && \
     # Get Marlin Renderer
     cd $JAVA_HOME/lib/ext/ && \
-    curl -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe.jar && \
-    curl -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe-sun-java2d.jar && \
-    curl -sS -O https://jdbc.postgresql.org/download/postgresql-42.0.0.jar
+    curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe.jar && \
+    curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe-sun-java2d.jar && \
+    curl -L -sS -O https://jdbc.postgresql.org/download/postgresql-42.0.0.jar
 
 #
 # GEOSERVER INSTALLATION
