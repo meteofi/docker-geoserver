@@ -85,6 +85,11 @@ RUN for PLUGIN in ${GEOSERVER_PLUGINS}; \
       rm geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip ; \
     done
 
+RUN adduser --disabled-password --gecos '' geoserver
+RUN chown -R geoserver $GEOSERVER_HOME/data_dir/
+
+USER geoserver
+
 # Expose GeoServer's default port
 EXPOSE 8080
 
