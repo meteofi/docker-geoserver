@@ -48,14 +48,22 @@ RUN \
     curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe-sun-java2d.jar && \
     curl -L -sS -O https://jdbc.postgresql.org/download/postgresql-42.0.0.jar
 
+
+RUN adduser --disabled-password --gecos '' geoserver
+RUN mkdir -p $GEOSERVER_HOME && chown -R geoserver $GEOSERVER_HOME
+
+USER geoserver
+WORKDIR /home/geoserver
+
 #
 # GEOSERVER INSTALLATION
 #
 
 # Install GeoServer
 RUN curl -sS -L -O http://sourceforge.net/projects/geoserver/files/GeoServer/$GEOSERVER_VERSION/geoserver-$GEOSERVER_VERSION-bin.zip && \
-    unzip geoserver-$GEOSERVER_VERSION-bin.zip -d /usr/share && mv -v /usr/share/geoserver* $GEOSERVER_HOME && \
+    unzip geoserver-$GEOSERVER_VERSION-bin.zip && mv -v geoserver-$GEOSERVER_VERSION/* $GEOSERVER_HOME/ && \
     rm geoserver-$GEOSERVER_VERSION-bin.zip && \
+    rmdir geoserver-$GEOSERVER_VERSION && \
     sed -e 's/>PARTIAL-BUFFER2</>SPEED</g' -i $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml && \
     # Remove old JAI from geoserver
     rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_codec-*.jar && \
@@ -84,11 +92,6 @@ RUN for PLUGIN in ${GEOSERVER_PLUGINS}; \
       unzip -o geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip -d /usr/share/geoserver/webapps/geoserver/WEB-INF/lib/ && \
       rm geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip ; \
     done
-
-RUN adduser --disabled-password --gecos '' geoserver
-RUN chown -R geoserver $GEOSERVER_HOME/data_dir/
-
-USER geoserver
 
 # Expose GeoServer's default port
 EXPOSE 8080
