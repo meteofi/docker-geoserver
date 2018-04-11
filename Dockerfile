@@ -46,14 +46,8 @@ RUN \
     cd $JAVA_HOME/lib/ext/ && \
     curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe.jar && \
     curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe-sun-java2d.jar && \
-    curl -L -sS -O https://jdbc.postgresql.org/download/postgresql-42.0.0.jar
-
-
-RUN adduser --disabled-password --gecos '' geoserver
-RUN mkdir -p $GEOSERVER_HOME && chown -R geoserver $GEOSERVER_HOME
-
-USER geoserver
-WORKDIR /home/geoserver
+    curl -L -sS -O https://jdbc.postgresql.org/download/postgresql-42.0.0.jar && \
+    sed -i 's/^assistive_technologies=/#&/' /etc/java-8-openjdk/accessibility.properties
 
 #
 # GEOSERVER INSTALLATION
@@ -61,9 +55,8 @@ WORKDIR /home/geoserver
 
 # Install GeoServer
 RUN curl -sS -L -O http://sourceforge.net/projects/geoserver/files/GeoServer/$GEOSERVER_VERSION/geoserver-$GEOSERVER_VERSION-bin.zip && \
-    unzip geoserver-$GEOSERVER_VERSION-bin.zip && mv -v geoserver-$GEOSERVER_VERSION/* $GEOSERVER_HOME/ && \
+    unzip geoserver-$GEOSERVER_VERSION-bin.zip && mv -v geoserver-$GEOSERVER_VERSION $GEOSERVER_HOME && \
     rm geoserver-$GEOSERVER_VERSION-bin.zip && \
-    rmdir geoserver-$GEOSERVER_VERSION && \
     sed -e 's/>PARTIAL-BUFFER2</>SPEED</g' -i $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml && \
     # Remove old JAI from geoserver
     rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_codec-*.jar && \
@@ -100,6 +93,13 @@ HEALTHCHECK --interval=1m --timeout=10s\
     CMD curl -f "http://localhost:8080/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities" || exit 1
 
 COPY docker-entrypoint.sh /
+
+RUN mkdir -p $GEOSERVER_HOME && \
+    chgrp -R 0 $GEOSERVER_HOME && \
+    chmod -R g=u $GEOSERVER_HOME /etc/passwd /var/log
+
+### Containers should NOT run as root as a good practice
+USER 10001
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["geoserver"]
