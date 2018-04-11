@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-slim
+FROM docker.io/openjdk:8-jre-slim
 LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
 
 # persistent / runtime deps
@@ -44,17 +44,18 @@ RUN \
     rm jai_imageio-1_1-lib-linux-amd64-jre.bin && \
     # Get Marlin Renderer
     cd $JAVA_HOME/lib/ext/ && \
-    curl -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe.jar && \
-    curl -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe-sun-java2d.jar && \
-    curl -sS -O https://jdbc.postgresql.org/download/postgresql-42.0.0.jar
+    curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe.jar && \
+    curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe-sun-java2d.jar && \
+    curl -L -sS -O https://jdbc.postgresql.org/download/postgresql-42.0.0.jar && \
+    sed -i 's/^assistive_technologies=/#&/' /etc/java-8-openjdk/accessibility.properties
 
 #
 # GEOSERVER INSTALLATION
 #
 
 # Install GeoServer
-RUN curl -sS -L -O https://sourceforge.net/projects/geoserver/files/GeoServer/$GEOSERVER_VERSION/geoserver-$GEOSERVER_VERSION-bin.zip && \
-    unzip geoserver-$GEOSERVER_VERSION-bin.zip -d /usr/share && mv -v /usr/share/geoserver* $GEOSERVER_HOME && \
+RUN curl -sS -L -O http://sourceforge.net/projects/geoserver/files/GeoServer/$GEOSERVER_VERSION/geoserver-$GEOSERVER_VERSION-bin.zip && \
+    unzip geoserver-$GEOSERVER_VERSION-bin.zip && mv -v geoserver-$GEOSERVER_VERSION $GEOSERVER_HOME && \
     rm geoserver-$GEOSERVER_VERSION-bin.zip && \
     sed -e 's/>PARTIAL-BUFFER2</>SPEED</g' -i $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml && \
     # Remove old JAI from geoserver
@@ -80,7 +81,7 @@ COPY jetty-jndi.xml $GEOSERVER_HOME/data_dir/
 # Install GeoServer Plugins
 RUN for PLUGIN in ${GEOSERVER_PLUGINS}; \
     do \
-      curl -sS -L -O https://sourceforge.net/projects/geoserver/files/GeoServer/$GEOSERVER_VERSION/extensions/geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip && \
+      curl -sS -L -O http://sourceforge.net/projects/geoserver/files/GeoServer/$GEOSERVER_VERSION/extensions/geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip && \
       unzip -o geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip -d /usr/share/geoserver/webapps/geoserver/WEB-INF/lib/ && \
       rm geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip ; \
     done
@@ -92,6 +93,13 @@ HEALTHCHECK --interval=1m --timeout=10s\
     CMD curl -f "http://localhost:8080/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities" || exit 1
 
 COPY docker-entrypoint.sh /
+
+RUN mkdir -p $GEOSERVER_HOME && \
+    chgrp -R 0 $GEOSERVER_HOME && \
+    chmod -R g=u $GEOSERVER_HOME /etc/passwd /var/log
+
+### Containers should NOT run as root as a good practice
+USER 10001
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["geoserver"]
