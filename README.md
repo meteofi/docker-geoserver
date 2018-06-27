@@ -48,4 +48,4 @@ docker run -d --restart=always --name geoserver -p 80:8080 \
  -v $HOME/geoserver:/usr/share/geoserver/data_dir meteofi/geoserver
 ```
 
-data_dir must have sufficient permissions for containert to have read write access.
+data_dir must have sufficient permissions for container to have read write access.
