@@ -13,7 +13,7 @@ Additional formats and publication options are available including Web Map Tile 
 ### FEATURES
 * build from official [OpenJDK 1.8 docker image](https://hub.docker.com/_/openjdk/)
 * includes native JAI, ImageIO and Marlin Renderer for better performance
-* includes plugins: CSS Styling, GRIB, Image Pyramid, NetCDF, Vector Tiling, WPS and YSLD Styling 
+* includes plugins: CSS Styling, GRIB, Image Pyramid, MongoDB, NetCDF, Vector Tiling, WPS and YSLD Styling 
 * includes additional fonts: [Noto](https://www.google.com/get/noto/), [Open Sans](https://fonts.google.com/specimen/Open+Sans), [Roboto](https://fonts.google.com/specimen/Roboto), [Ubuntu](https://fonts.google.com/specimen/Ubuntu) and [Lato](https://fonts.google.com/specimen/Lato) for better labeling
 * image follows recommendations in http://docs.geoserver.org/stable/en/user/production/ where applicable
 * docker health check
