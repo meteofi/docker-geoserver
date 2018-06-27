@@ -33,13 +33,13 @@ RUN \
 # Install native JAI, ImageIO and Marlin Renderer
 RUN \
     cd $JAVA_HOME && \
-    curl -sS -O http://download.java.net/media/jai/builds/release/1_1_3/jai-1_1_3-lib-linux-amd64-jre.bin && \
+    curl -sS -O https://download.java.net/media/jai/builds/release/1_1_3/jai-1_1_3-lib-linux-amd64-jre.bin && \
     echo "yes" | sh jai-1_1_3-lib-linux-amd64-jre.bin && \
     rm jai-1_1_3-lib-linux-amd64-jre.bin && \
     # ImageIO
     cd $JAVA_HOME && \
     export _POSIX2_VERSION=199209 &&\
-    curl -sS -O http://download.java.net/media/jai-imageio/builds/release/1.1/jai_imageio-1_1-lib-linux-amd64-jre.bin && \
+    curl -sS -O https://download.java.net/media/jai-imageio/builds/release/1.1/jai_imageio-1_1-lib-linux-amd64-jre.bin && \
     echo "yes" | sh jai_imageio-1_1-lib-linux-amd64-jre.bin && \
     rm jai_imageio-1_1-lib-linux-amd64-jre.bin && \
     # Get Marlin Renderer
@@ -69,10 +69,10 @@ RUN curl -sS -L -O http://sourceforge.net/projects/geoserver/files/GeoServer/$GE
     echo '[depend]\nserver\n[lib]\nlib/jetty-util-${jetty.version}.jar' > $GEOSERVER_HOME/modules/util.mod && \
     echo '[depend]\nserver\n[lib]\nlib/jetty-servlets-${jetty.version}.jar' > $GEOSERVER_HOME/modules/servlets.mod && \
     cd  $GEOSERVER_HOME/lib/ && \
-    curl -sS -O http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-plus/9.2.13.v20150730/jetty-plus-9.2.13.v20150730.jar && \
-    curl -sS -O http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-jndi/9.2.13.v20150730/jetty-jndi-9.2.13.v20150730.jar && \
-    curl -sS -O http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-servlets/9.2.13.v20150730/jetty-servlets-9.2.13.v20150730.jar && \
-    curl -sS -O http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-util/9.2.13.v20150730/jetty-util-9.2.13.v20150730.jar && \
+    curl -sS -L -O http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-plus/9.2.13.v20150730/jetty-plus-9.2.13.v20150730.jar && \
+    curl -sS -L -O http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-jndi/9.2.13.v20150730/jetty-jndi-9.2.13.v20150730.jar && \
+    curl -sS -L -O http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-servlets/9.2.13.v20150730/jetty-servlets-9.2.13.v20150730.jar && \
+    curl -sS -L -O http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-util/9.2.13.v20150730/jetty-util-9.2.13.v20150730.jar && \
     perl -i -0777 -pe 's/<!--\s*?(<filter.*?cross-origin.*?\/filter>)\s*?-->/$1/s' $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml && \
     perl -i -0777 -pe 's/<!--\s*?(<filter-mapping.*?cross-origin.*?\/filter-mapping>)\s*?-->/$1/s' $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml
 
