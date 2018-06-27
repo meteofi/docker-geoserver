@@ -99,7 +99,7 @@ RUN mkdir -p $GEOSERVER_HOME && \
     chmod -R g=u $GEOSERVER_HOME /etc/passwd /var/log
 
 ### Containers should NOT run as root as a good practice
-USER 10001
+USER 101010
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["geoserver"]
