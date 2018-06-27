@@ -7,10 +7,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 
 ENV NOTO_FONTS="NotoSans-unhinted NotoSerif-unhinted NotoMono-hinted" \
     GOOGLE_FONTS="Open%20Sans Roboto Lato Ubuntu" \
     GEOSERVER_VERSION="2.13.1" \
-    GEOSERVER_PLUGINS="css grib netcdf pyramid vectortiles wps ysld" \
+    GEOSERVER_PLUGINS="css grib imagemosaic-jdbc mongodb netcdf pyramid vectortiles wps ysld" \
     GEOSERVER_HOME="/usr/share/geoserver" \
     GEOSERVER_NODE_OPTS='id:$host_name' \
-    JAVA_OPTS="-Xbootclasspath/a:${JAVA_HOME}/jre/lib/ext/marlin-0.7.4-Unsafe.jar -Xbootclasspath/p:${JAVA_HOME}/jre/lib/ext/marlin-0.7.4-Unsafe-sun-java2d.jar -Dsun.java2d.renderer=org.marlin.pisces.PiscesRenderingEngine -XX:+UseG1GC"
+    JAVA_OPTS="-Xbootclasspath/a:${JAVA_HOME}/jre/lib/ext/marlin-0.9.2-Unsafe.jar -Xbootclasspath/p:${JAVA_HOME}/jre/lib/ext/marlin-0.9.2-Unsafe-sun-java2d.jar -Dsun.java2d.renderer=org.marlin.pisces.PiscesRenderingEngine -XX:+UseG1GC"
 # Install Google Noto fonts
 RUN mkdir -p /usr/share/fonts/truetype/noto && \
     for FONT in ${NOTO_FONTS}; \
@@ -44,8 +44,8 @@ RUN \
     rm jai_imageio-1_1-lib-linux-amd64-jre.bin && \
     # Get Marlin Renderer
     cd $JAVA_HOME/lib/ext/ && \
-    curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe.jar && \
-    curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0.7.4_2/marlin-0.7.4-Unsafe-sun-java2d.jar && \
+    curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0_9_2/marlin-0.9.2-Unsafe.jar && \
+    curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0_9_2/marlin-0.9.2-Unsafe-sun-java2d.jar && \
     curl -L -sS -O https://jdbc.postgresql.org/download/postgresql-42.0.0.jar && \
     sed -i 's/^assistive_technologies=/#&/' /etc/java-8-openjdk/accessibility.properties
 
@@ -89,7 +89,7 @@ RUN for PLUGIN in ${GEOSERVER_PLUGINS}; \
 # Expose GeoServer's default port
 EXPOSE 8080
 
-HEALTHCHECK --interval=1m --timeout=10s\
+HEALTHCHECK --interval=30s --timeout=10s\
     CMD curl -f "http://localhost:8080/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities" || exit 1
 
 COPY docker-entrypoint.sh /
