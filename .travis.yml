@@ -4,11 +4,11 @@ services:
   - docker
 
 env:
-  - GEOSERVER_VERSION=2.13.1 TAGS=2.13.1,2.13,latest
+  - GEOSERVER_VERSION=2.13.1
 
 script:
   - make
 
 after_success:
-  - docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}"
-  - docker push meteofi/geoservertest:${GEOSERVER_VERSION}
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker push meteofi/geoservertest
