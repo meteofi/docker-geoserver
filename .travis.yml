@@ -1,0 +1,11 @@
+language: bash
+
+services:
+  - docker
+
+env:
+  - GEOSERVER_VERSION=2.13.1 TAGS=2.13.1,2.13,latest
+
+script:
+  - make
+
