@@ -10,7 +10,8 @@ ENV NOTO_FONTS="NotoSans-unhinted NotoSerif-unhinted NotoMono-hinted" \
     GEOSERVER_PLUGINS="css grib imagemosaic-jdbc mongodb netcdf pyramid vectortiles wps ysld" \
     GEOSERVER_HOME="/usr/share/geoserver" \
     GEOSERVER_NODE_OPTS='id:$host_name' \
-    JAVA_OPTS="-Xbootclasspath/a:${JAVA_HOME}/jre/lib/ext/marlin-0.9.2-Unsafe.jar -Xbootclasspath/p:${JAVA_HOME}/jre/lib/ext/marlin-0.9.2-Unsafe-sun-java2d.jar -Dsun.java2d.renderer=org.marlin.pisces.PiscesRenderingEngine -XX:+UseG1GC"
+    JAVA_OPTS="-Xbootclasspath/a:${JAVA_HOME}/jre/lib/ext/marlin-0.9.2-Unsafe.jar -Xbootclasspath/p:${JAVA_HOME}/jre/lib/ext/marlin-0.9.2-Unsafe-sun-java2d.jar -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine -XX:+UseG1GC"
+
 # Install Google Noto fonts
 RUN mkdir -p /usr/share/fonts/truetype/noto && \
     for FONT in ${NOTO_FONTS}; \
@@ -30,19 +31,23 @@ RUN \
     	rm -f ${FONT}.zip ; \
     done
 
-# Install native JAI, ImageIO and Marlin Renderer
+# Install native JAI
 RUN \
     cd $JAVA_HOME && \
     curl -sS -L -O https://download.java.net/media/jai/builds/release/1_1_3/jai-1_1_3-lib-linux-amd64-jre.bin && \
     echo "yes" | sh jai-1_1_3-lib-linux-amd64-jre.bin && \
-    rm jai-1_1_3-lib-linux-amd64-jre.bin && \
-    # ImageIO
+    rm jai-1_1_3-lib-linux-amd64-jre.bin
+
+# Install ImageIO
+RUN \
     cd $JAVA_HOME && \
     export _POSIX2_VERSION=199209 &&\
     curl -sS -L -O https://download.java.net/media/jai-imageio/builds/release/1.1/jai_imageio-1_1-lib-linux-amd64-jre.bin && \
     echo "yes" | sh jai_imageio-1_1-lib-linux-amd64-jre.bin && \
-    rm jai_imageio-1_1-lib-linux-amd64-jre.bin && \
-    # Get Marlin Renderer
+    rm jai_imageio-1_1-lib-linux-amd64-jre.bin
+
+# Get Marlin Renderer
+RUN \
     cd $JAVA_HOME/lib/ext/ && \
     curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0_9_2/marlin-0.9.2-Unsafe.jar && \
     curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0_9_2/marlin-0.9.2-Unsafe-sun-java2d.jar && \
@@ -62,6 +67,7 @@ RUN curl -sS -L -O http://sourceforge.net/projects/geoserver/files/GeoServer/$GE
     rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_codec-*.jar && \
     rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_core-*jar && \
     rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_imageio-*.jar && \
+    rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/marlin-*.jar && \
     echo "--module=servlets" >> $GEOSERVER_HOME/start.ini && \
     echo "--module=jndi"    >> $GEOSERVER_HOME/start.ini && \
     echo '[depend]\nserver\nplus\nutil\n[xml]\ndata_dir/jetty-jndi.xml\n[lib]\nlib/jetty-jndi-${jetty.version}.jar' > $GEOSERVER_HOME/modules/jndi.mod && \
