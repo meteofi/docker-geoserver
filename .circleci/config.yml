@@ -14,7 +14,7 @@ jobs:
 #         docker run -d --name db company/proprietary-db:1.2.3
 
      # build the application image
-     - run: docker build -t meteofi/geoserver:$CIRCLE_BRANCH .
+     - run: make
 
      # deploy the image
 #     - run: docker push company/app:$CIRCLE_BRANCH
