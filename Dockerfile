@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 
 ENV NOTO_FONTS="NotoSans-unhinted NotoSerif-unhinted NotoMono-hinted" \
     GOOGLE_FONTS="Open%20Sans Roboto Lato Ubuntu" \
     GEOSERVER_VERSION=$GEOSERVER_VERSION \
-    GEOSERVER_PLUGINS="css grib imagemosaic-jdbc mongodb netcdf pyramid vectortiles wps ysld" \
+    GEOSERVER_PLUGINS="css grib imagemosaic-jdbc mongodb mysql netcdf pyramid vectortiles wps ysld" \
     GEOSERVER_HOME="/usr/share/geoserver" \
     GEOSERVER_NODE_OPTS='id:$host_name' \
     JAVA_OPTS="-Xbootclasspath/a:${JAVA_HOME}/jre/lib/ext/marlin-0.9.2-Unsafe.jar -Xbootclasspath/p:${JAVA_HOME}/jre/lib/ext/marlin-0.9.2-Unsafe-sun-java2d.jar -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine -XX:+UseG1GC"
