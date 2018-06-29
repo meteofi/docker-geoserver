@@ -3,7 +3,7 @@ jobs:
  build:
    branches:
      only:
-        - 2.13
+        - "2.13"
    machine: true
    steps:
      - checkout
