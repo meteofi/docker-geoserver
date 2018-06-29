@@ -102,6 +102,7 @@ HEALTHCHECK --interval=30s --timeout=10s\
 
 COPY docker-entrypoint.sh /
 
+# Make needed directories and files 0 group writable
 RUN mkdir -p $GEOSERVER_HOME && \
     chgrp -R 0 $GEOSERVER_HOME && \
     chmod -R g=u $GEOSERVER_HOME /etc/passwd /var/log
