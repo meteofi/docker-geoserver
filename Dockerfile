@@ -1,12 +1,14 @@
 FROM docker.io/openjdk:8-jre-slim
 LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
 
+ARG GEOSERVER_VERSION="2.13.1"
+
 # persistent / runtime deps
 RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 curl && rm -r /var/lib/apt/lists/*
 
 ENV NOTO_FONTS="NotoSans-unhinted NotoSerif-unhinted NotoMono-hinted" \
     GOOGLE_FONTS="Open%20Sans Roboto Lato Ubuntu" \
-    GEOSERVER_VERSION="2.13.1" \
+    GEOSERVER_VERSION=$GEOSERVER_VERSION \
     GEOSERVER_PLUGINS="css grib imagemosaic-jdbc mongodb netcdf pyramid vectortiles wps ysld" \
     GEOSERVER_HOME="/usr/share/geoserver" \
     GEOSERVER_NODE_OPTS='id:$host_name' \
