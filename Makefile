@@ -20,7 +20,7 @@ release:
 		--build-arg GEOSERVER_VERSION=$(GEOSERVER_VERSION) .
 
 shell:
-	docker run --rm --name $(NAME) -it "$(IMAGE):$(GEOSERVER_VERSION)" bash
+	docker run --rm --name $(NAME) -p "8888:8080" -it "$(IMAGE):$(GEOSERVER_VERSION)" bash
 
 
 run:
