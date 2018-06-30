@@ -12,7 +12,7 @@ ENV NOTO_FONTS="NotoSans-unhinted NotoSerif-unhinted NotoMono-hinted" \
     GEOSERVER_PLUGINS="css grib imagemosaic-jdbc mongodb mysql netcdf pyramid vectortiles wps ysld" \
     GEOSERVER_HOME="/usr/share/geoserver" \
     GEOSERVER_NODE_OPTS='id:$host_name' \
-    JAVA_OPTS="-Xbootclasspath/a:${JAVA_HOME}/jre/lib/ext/marlin-0.9.2-Unsafe.jar -Xbootclasspath/p:${JAVA_HOME}/jre/lib/ext/marlin-0.9.2-Unsafe-sun-java2d.jar -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine -XX:+UseG1GC"
+    JAVA_OPTS="-XX:+UseG1GC"
 
 # Install Google Noto fonts
 RUN mkdir -p /usr/share/fonts/truetype/noto && \
@@ -48,11 +48,9 @@ RUN \
     echo "yes" | sh jai_imageio-1_1-lib-linux-amd64-jre.bin && \
     rm jai_imageio-1_1-lib-linux-amd64-jre.bin
 
-# Get Marlin Renderer
+# Get posgresql driver
 RUN \
     cd $JAVA_HOME/lib/ext/ && \
-    curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0_9_2/marlin-0.9.2-Unsafe.jar && \
-    curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0_9_2/marlin-0.9.2-Unsafe-sun-java2d.jar && \
     curl -L -sS -O https://jdbc.postgresql.org/download/postgresql-42.0.0.jar && \
     sed -i 's/^assistive_technologies=/#&/' /etc/java-8-openjdk/accessibility.properties
 
@@ -83,6 +81,12 @@ RUN curl -sS -L -O http://sourceforge.net/projects/geoserver/files/GeoServer/$GE
     curl -sS -L -O http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-util/9.2.13.v20150730/jetty-util-9.2.13.v20150730.jar && \
     perl -i -0777 -pe 's/<!--\s*?(<filter.*?cross-origin.*?\/filter>)\s*?-->/$1/s' $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml && \
     perl -i -0777 -pe 's/<!--\s*?(<filter-mapping.*?cross-origin.*?\/filter-mapping>)\s*?-->/$1/s' $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml
+
+# Get Marlin Renderer
+RUN \
+    cd $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/ && \
+    curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0_9_2/marlin-0.9.2-Unsafe.jar
+
 
 COPY jetty-jndi.xml $GEOSERVER_HOME/data_dir/
 
