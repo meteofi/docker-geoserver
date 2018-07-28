@@ -3,9 +3,6 @@ language: bash
 services:
   - docker
 
-env:
-  - GEOSERVER_VERSION=2.13.2
-
 script:
   - make
 
