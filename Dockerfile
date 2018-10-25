@@ -1,7 +1,7 @@
 FROM docker.io/openjdk:8-jre-slim
 LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
 
-ARG GEOSERVER_VERSION="2.13.2"
+ARG GEOSERVER_VERSION="2.14.0"
 
 # persistent / runtime deps
 RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 curl && rm -r /var/lib/apt/lists/*
@@ -85,7 +85,7 @@ RUN curl -sS -L -O http://sourceforge.net/projects/geoserver/files/GeoServer/$GE
 # Get Marlin Renderer
 RUN \
     cd $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/ && \
-    curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0_9_2/marlin-0.9.2-Unsafe.jar
+    curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0_9_3/marlin-0.9.3-Unsafe.jar
 
 
 COPY jetty-jndi.xml $GEOSERVER_HOME/data_dir/
