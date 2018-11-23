@@ -30,11 +30,15 @@ or build it yourself
 git clone -b 2.13 https://github.com/meteofi/docker-geoserver.git
 cd docker-geoserver
 docker build --rm -t meteofi/geoserver .
+# or alternatively
+docker-compose build
 ```
 
 ### QUICK START
 ```
 docker run -d --name geoserver -p 8080:8080  meteofi/geoserver
+# or alternatively
+docker-compose up -d
 ```
 Admin interface: http://localhost:8080/geoserver/web/
 
@@ -44,7 +48,7 @@ The default administration credentials are:
 
 ## Run with custom GeoServer data directory
 ```
-docker run -d --restart=always --name geoserver -p 80:8080 \
+docker run -d --restart=always --name geoserver -p 8080:8080 \
  -v $HOME/geoserver:/usr/share/geoserver/data_dir meteofi/geoserver
 ```
 

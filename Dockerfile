@@ -6,11 +6,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 
 
 ENV NOTO_FONTS="NotoSans-unhinted NotoSerif-unhinted NotoMono-hinted" \
     GOOGLE_FONTS="Open%20Sans Roboto Lato Ubuntu" \
-    GEOSERVER_VERSION="2.13.1" \
+    GEOSERVER_VERSION="2.14.1" \
     GEOSERVER_PLUGINS="css grib imagemosaic-jdbc mongodb netcdf pyramid vectortiles wps ysld" \
     GEOSERVER_HOME="/usr/share/geoserver" \
     GEOSERVER_NODE_OPTS='id:$host_name' \
-    JAVA_OPTS="-Xbootclasspath/a:${JAVA_HOME}/jre/lib/ext/marlin-0.9.2-Unsafe.jar -Xbootclasspath/p:${JAVA_HOME}/jre/lib/ext/marlin-0.9.2-Unsafe-sun-java2d.jar -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine -XX:+UseG1GC"
+    JETTY_VERSION="9.4.14.v20181114" \
+    JAVA_OPTS="-Xbootclasspath/a:${JAVA_HOME}/jre/lib/ext/marlin-0.9.2-Unsafe.jar -Xbootclasspath/p:${JAVA_HOME}/jre/lib/ext/marlin-0.9.2-Unsafe-sun-java2d.jar -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine -XX:+UseG1GC -DGEOSERVER_XSTREAM_WHITELIST=org.geoserver.rest.security.xml.JaxbUser"
 
 # Install Google Noto fonts
 RUN mkdir -p /usr/share/fonts/truetype/noto && \
@@ -51,18 +52,31 @@ RUN \
     cd $JAVA_HOME/lib/ext/ && \
     curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0_9_2/marlin-0.9.2-Unsafe.jar && \
     curl -L -sS -O https://github.com/bourgesl/marlin-renderer/releases/download/v0_9_2/marlin-0.9.2-Unsafe-sun-java2d.jar && \
-    curl -L -sS -O https://jdbc.postgresql.org/download/postgresql-42.0.0.jar && \
+    curl -L -sS -O https://jdbc.postgresql.org/download/postgresql-42.2.5.jar && \
     sed -i 's/^assistive_technologies=/#&/' /etc/java-8-openjdk/accessibility.properties
 
 #
 # GEOSERVER INSTALLATION
 #
 
+
+
+
+# Install Jetty
+RUN curl -sS -L -O https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-distribution/${JETTY_VERSION}/jetty-distribution-${JETTY_VERSION}.zip && \
+    unzip jetty-distribution-${JETTY_VERSION}.zip && \
+    mv -v jetty-distribution-${JETTY_VERSION} $GEOSERVER_HOME && \
+    rm jetty-distribution-${JETTY_VERSION}.zip
 # Install GeoServer
 RUN curl -sS -L -O http://sourceforge.net/projects/geoserver/files/GeoServer/$GEOSERVER_VERSION/geoserver-$GEOSERVER_VERSION-bin.zip && \
-    unzip geoserver-$GEOSERVER_VERSION-bin.zip && mv -v geoserver-$GEOSERVER_VERSION $GEOSERVER_HOME && \
-    rm geoserver-$GEOSERVER_VERSION-bin.zip && \
-    sed -e 's/>PARTIAL-BUFFER2</>SPEED</g' -i $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml && \
+    unzip geoserver-$GEOSERVER_VERSION-bin.zip && \
+    cp -r --no-target-directory geoserver-$GEOSERVER_VERSION/webapps $GEOSERVER_HOME/webapps && \
+    cp -r --no-target-directory geoserver-$GEOSERVER_VERSION/data_dir $GEOSERVER_HOME/data_dir && \
+    cp -r --no-target-directory geoserver-$GEOSERVER_VERSION/bin $GEOSERVER_HOME/bin && \
+    rm -rf geoserver-$GEOSERVER_VERSION && \
+    rm geoserver-$GEOSERVER_VERSION-bin.zip
+# Do some adjustments
+RUN sed -e 's/>PARTIAL-BUFFER2</>SPEED</g' -i $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml && \
     # Remove old JAI from geoserver
     rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_codec-*.jar && \
     rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/jai_core-*jar && \
@@ -70,19 +84,8 @@ RUN curl -sS -L -O http://sourceforge.net/projects/geoserver/files/GeoServer/$GE
     rm -rf $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib/marlin-*.jar && \
     echo "--module=servlets" >> $GEOSERVER_HOME/start.ini && \
     echo "--module=jndi"    >> $GEOSERVER_HOME/start.ini && \
-    echo '[depend]\nserver\nplus\nutil\n[xml]\ndata_dir/jetty-jndi.xml\n[lib]\nlib/jetty-jndi-${jetty.version}.jar' > $GEOSERVER_HOME/modules/jndi.mod && \
-    echo '[depend]\nserver\n[lib]\nlib/jetty-plus-${jetty.version}.jar' > $GEOSERVER_HOME/modules/plus.mod && \
-    echo '[depend]\nserver\n[lib]\nlib/jetty-util-${jetty.version}.jar' > $GEOSERVER_HOME/modules/util.mod && \
-    echo '[depend]\nserver\n[lib]\nlib/jetty-servlets-${jetty.version}.jar' > $GEOSERVER_HOME/modules/servlets.mod && \
-    cd  $GEOSERVER_HOME/lib/ && \
-    curl -sS -L -O http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-plus/9.2.13.v20150730/jetty-plus-9.2.13.v20150730.jar && \
-    curl -sS -L -O http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-jndi/9.2.13.v20150730/jetty-jndi-9.2.13.v20150730.jar && \
-    curl -sS -L -O http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-servlets/9.2.13.v20150730/jetty-servlets-9.2.13.v20150730.jar && \
-    curl -sS -L -O http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-util/9.2.13.v20150730/jetty-util-9.2.13.v20150730.jar && \
     perl -i -0777 -pe 's/<!--\s*?(<filter.*?cross-origin.*?\/filter>)\s*?-->/$1/s' $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml && \
     perl -i -0777 -pe 's/<!--\s*?(<filter-mapping.*?cross-origin.*?\/filter-mapping>)\s*?-->/$1/s' $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml
-
-COPY jetty-jndi.xml $GEOSERVER_HOME/data_dir/
 
 # Install GeoServer Plugins
 RUN for PLUGIN in ${GEOSERVER_PLUGINS}; \
@@ -91,6 +94,9 @@ RUN for PLUGIN in ${GEOSERVER_PLUGINS}; \
       unzip -o geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip -d /usr/share/geoserver/webapps/geoserver/WEB-INF/lib/ && \
       rm geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip ; \
     done
+
+COPY jetty-jndi.xml $GEOSERVER_HOME/data_dir/
+VOLUME $GEOSERVER_HOME/data_dir/
 
 # Expose GeoServer's default port
 EXPOSE 8080

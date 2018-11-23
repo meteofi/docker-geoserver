@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  geoserver:
+    build: .
+    container_name: geoserver
+    image: meteofi/geoserver:latest
+    # volumes:
+      # - ${HOME}/.geoserver:/usr/share/geoserver/data_dir
+    ports:
+      - 8080:8080
