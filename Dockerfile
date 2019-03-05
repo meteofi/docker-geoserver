@@ -12,7 +12,9 @@ ENV NOTO_FONTS="NotoSans-unhinted NotoSerif-unhinted NotoMono-hinted" \
     GEOSERVER_PLUGINS="css grib imagemosaic-jdbc mongodb mysql netcdf pyramid vectortiles wps ysld" \
     GEOSERVER_HOME="/usr/share/geoserver" \
     GEOSERVER_NODE_OPTS='id:$host_name' \
-    JAVA_OPTS="-XX:+UseG1GC"
+    JAVA_OPTS="-XX:+UseG1GC" \
+    JETTY_VERSION="9.4.12.v20180830" \
+    POSGRESQL_VERSION="42.2.5"
 
 # Install Google Noto fonts
 RUN mkdir -p /usr/share/fonts/truetype/noto && \
@@ -51,7 +53,7 @@ RUN \
 # Get posgresql driver
 RUN \
     cd $JAVA_HOME/lib/ext/ && \
-    curl -L -sS -O https://jdbc.postgresql.org/download/postgresql-42.0.0.jar && \
+    curl -L -sS -O https://jdbc.postgresql.org/download/postgresql-${POSGRESQL_VERSION}.jar && \
     sed -i 's/^assistive_technologies=/#&/' /etc/java-8-openjdk/accessibility.properties
 
 #
@@ -75,10 +77,8 @@ RUN curl -sS -L -O https://sourceforge.net/projects/geoserver/files/GeoServer/$G
     echo '[depend]\nserver\n[lib]\nlib/jetty-util-${jetty.version}.jar' > $GEOSERVER_HOME/modules/util.mod && \
     echo '[depend]\nserver\n[lib]\nlib/jetty-servlets-${jetty.version}.jar' > $GEOSERVER_HOME/modules/servlets.mod && \
     cd  $GEOSERVER_HOME/lib/ && \
-    curl -sS -L -O https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-plus/9.2.13.v20150730/jetty-plus-9.2.13.v20150730.jar && \
-    curl -sS -L -O https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-jndi/9.2.13.v20150730/jetty-jndi-9.2.13.v20150730.jar && \
-    curl -sS -L -O https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-servlets/9.2.13.v20150730/jetty-servlets-9.2.13.v20150730.jar && \
-    curl -sS -L -O https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-util/9.2.13.v20150730/jetty-util-9.2.13.v20150730.jar && \
+    curl -sS -L -O https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-plus/${JETTY_VERSION}/jetty-plus-${JETTY_VERSION}.jar && \
+    curl -sS -L -O https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-jndi/${JETTY_VERSION}/jetty-jndi-${JETTY_VERSION}.jar && \
     perl -i -0777 -pe 's/<!--\s*?(<filter.*?cross-origin.*?\/filter>)\s*?-->/$1/s' $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml && \
     perl -i -0777 -pe 's/<!--\s*?(<filter-mapping.*?cross-origin.*?\/filter-mapping>)\s*?-->/$1/s' $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml
 
@@ -116,3 +116,7 @@ USER 101010
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["geoserver"]
+
+
+#    curl -sS -L -O https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-servlets/${JETTY_VERSION}/jetty-servlets-${JETTY_VERSION}.jar && \
+#    curl -sS -L -O https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-util/${JETTY_VERSION}/jetty-util-${JETTY_VERSION}.jar && \
