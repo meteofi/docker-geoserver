@@ -1,7 +1,7 @@
 FROM docker.io/openjdk:8-jre-slim
 LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
 
-ARG GEOSERVER_VERSION="2.15.0"
+ARG GEOSERVER_VERSION="2.15.1"
 
 # persistent / runtime deps
 RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 curl && rm -r /var/lib/apt/lists/*
