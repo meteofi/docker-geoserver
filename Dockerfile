@@ -79,8 +79,8 @@ RUN curl -sS -L -O https://sourceforge.net/projects/geoserver/files/GeoServer/$G
     cd  $GEOSERVER_HOME/lib/ && \
     curl -sS -L -O https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-plus/${JETTY_VERSION}/jetty-plus-${JETTY_VERSION}.jar && \
     curl -sS -L -O https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-jndi/${JETTY_VERSION}/jetty-jndi-${JETTY_VERSION}.jar && \
-    perl -i -0777 -pe 's/<!--\s*?(<filter.*?cross-origin.*?\/filter>)\s*?-->/$1/s' $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml && \
-    perl -i -0777 -pe 's/<!--\s*?(<filter-mapping.*?cross-origin.*?\/filter-mapping>)\s*?-->/$1/s' $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml
+    perl -i -0777 -pe 's/<!-- Uncomment following filter to enable CORS\s*?(<filter.*?cross-origin.*?\/filter>)\s*?-->/$1/s' $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml && \
+    perl -i -0777 -pe 's/<!-- Uncomment following filter to enable CORS\s*?(<filter-mapping.*?cross-origin.*?\/filter-mapping>)\s*?-->/$1/s' $GEOSERVER_HOME/webapps/geoserver/WEB-INF/web.xml 
 
 # Get Marlin Renderer
 RUN \
