@@ -1,10 +1,10 @@
-FROM docker.io/openjdk:8-jre-slim
+FROM openjdk:8-jre-slim
 LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
 
 ARG GEOSERVER_VERSION="2.14.3"
 
 # persistent / runtime deps
-RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 curl && rm -r /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 curl unzip && rm -r /var/lib/apt/lists/*
 
 ENV NOTO_FONTS="NotoSans-unhinted NotoSerif-unhinted NotoMono-hinted" \
     GOOGLE_FONTS="Open%20Sans Roboto Lato Ubuntu" \
@@ -51,8 +51,8 @@ RUN \
 # Get posgresql driver
 RUN \
     cd $JAVA_HOME/lib/ext/ && \
-    curl -L -sS -O https://jdbc.postgresql.org/download/postgresql-42.0.0.jar && \
-    sed -i 's/^assistive_technologies=/#&/' /etc/java-8-openjdk/accessibility.properties
+    curl -L -sS -O https://jdbc.postgresql.org/download/postgresql-42.0.0.jar
+#    sed -i 's/^assistive_technologies=/#&/' /etc/java-*-openjdk/accessibility.properties
 
 #
 # GEOSERVER INSTALLATION
