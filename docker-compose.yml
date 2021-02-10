@@ -1,0 +1,9 @@
+version: '3.9'
+
+services:
+   geoserver:
+     image: meteofi/geoserver:latest
+     ports:
+       - "8080:8080"
+       - "8433:8433"
+     restart: always
