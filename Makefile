@@ -11,7 +11,31 @@ build:
 	docker build --rm \
 		--tag "$(IMAGE):$(GEOSERVER_VERSION)" \
 		--tag "$(IMAGE):$(GEOSERVER_MAJOR)" \
-		--build-arg GEOSERVER_VERSION=$(GEOSERVER_VERSION) .
+		--build-arg GEOSERVER_VERSION=$(GEOSERVER_VERSION) $(GEOSERVER_MAJOR)/
+
+build-2.18:
+	docker build --rm \
+		--tag "$(IMAGE):$(GEOSERVER_VERSION)" \
+		--tag "$(IMAGE):$(GEOSERVER_MAJOR)" \
+		--build-arg GEOSERVER_VERSION=$(GEOSERVER_VERSION) $(GEOSERVER_MAJOR)/
+
+build-2.17:
+	docker build --rm \
+		--tag "$(IMAGE):2.17.4" \
+		--tag "$(IMAGE):2.17" \
+		--build-arg GEOSERVER_VERSION=2.17.4 2.17/
+
+build-2.16:
+	docker build --rm \
+		--tag "$(IMAGE):2.16.5" \
+		--tag "$(IMAGE):2.16" \
+		--build-arg GEOSERVER_VERSION=2.16.5 2.16/
+
+build-maintenance:
+	docker build --rm \
+		--tag "$(IMAGE):$(GEOSERVER_MAINTENANCE_VERSION)" \
+		--tag "$(IMAGE):$(GEOSERVER_MAINTENANCE_MAJOR)" \
+		--build-arg GEOSERVER_VERSION=$(GEOSERVER_MAINTENANCE_VERSION) .
 
 release:
 	docker build --rm --no-cache --pull \
