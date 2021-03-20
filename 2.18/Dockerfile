@@ -4,6 +4,7 @@ FROM docker.io/tomcat:$TOMCAT_VERSION
 LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
 
 ARG GEOSERVER_VERSION="2.18.2"
+ARG GEOSERVER_DATA_DIR="$CATALINA_HOME/webapps/geoserver/data"
 
 # persistent / runtime deps
 RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 curl patch certbot && rm -r /var/lib/apt/lists/*
@@ -11,6 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 
 ENV NOTO_FONTS="NotoSans-unhinted NotoSerif-unhinted NotoMono-hinted" \
     GOOGLE_FONTS="Open%20Sans Roboto Lato Ubuntu" \
     GEOSERVER_VERSION=$GEOSERVER_VERSION \
+    GEOSERVER_DATA_DIR=$GEOSERVER_DATA_DIR \
     GEOSERVER_PLUGINS="css grib mongodb netcdf pyramid vectortiles wps ysld" \
     GEOSERVER_NODE_OPTS='id:$host_name' \
     GEOWEBCACHE_CACHE_DIR='/data/gwc' \
@@ -58,6 +60,8 @@ RUN for PLUGIN in ${GEOSERVER_PLUGINS}; \
 EXPOSE 8080
 EXPOSE 8443
 
+VOLUME $GEOSERVER_DATA_DIR
+
 HEALTHCHECK --interval=30s --timeout=10s\
     CMD curl -f "http://localhost:8080/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities" || exit 1
 
@@ -65,9 +69,9 @@ COPY docker-entrypoint.sh /
 COPY server.xml $CATALINA_HOME/conf/
 #COPY privkey.pem cert.pem $CATALINA_HOME/conf/
 
-RUN mkdir -p $GEOWEBCACHE_CACHE_DIR && \
-    chgrp -R 0 $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR && \
-    chmod -R g=u $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR /etc/passwd /var/log
+RUN mkdir -p $GEOWEBCACHE_CACHE_DIR  $GEOSERVER_DATA_DIR && \
+    chgrp -R 0 $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR $GEOSERVER_DATA_DIR && \
+    chmod -R g=u $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR $GEOSERVER_DATA_DIR /etc/passwd /var/log
 
 ### Containers should NOT run as root as a good practice
 USER 101010
