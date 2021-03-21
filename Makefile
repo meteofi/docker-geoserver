@@ -21,9 +21,9 @@ build-2.18:
 
 build-2.17:
 	docker build --rm \
-		--tag "$(IMAGE):2.17.4" \
+		--tag "$(IMAGE):2.17.5" \
 		--tag "$(IMAGE):2.17" \
-		--build-arg GEOSERVER_VERSION=2.17.4 2.17/
+		--build-arg GEOSERVER_VERSION=2.17.5 2.17/
 
 build-2.16:
 	docker build --rm \

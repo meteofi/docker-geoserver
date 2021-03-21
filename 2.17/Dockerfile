@@ -3,7 +3,7 @@ ARG TOMCAT_VERSION="9"
 FROM docker.io/tomcat:$TOMCAT_VERSION
 LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
 
-ARG GEOSERVER_VERSION="2.17.4"
+ARG GEOSERVER_VERSION="2.17.5"
 
 # persistent / runtime deps
 RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 curl patch certbot && rm -r /var/lib/apt/lists/*
