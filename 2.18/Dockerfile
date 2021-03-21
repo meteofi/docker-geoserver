@@ -69,9 +69,9 @@ COPY docker-entrypoint.sh /
 COPY server.xml $CATALINA_HOME/conf/
 #COPY privkey.pem cert.pem $CATALINA_HOME/conf/
 
-RUN mkdir -p $GEOWEBCACHE_CACHE_DIR  $GEOSERVER_DATA_DIR && \
-    chgrp -R 0 $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR $GEOSERVER_DATA_DIR && \
-    chmod -R g=u $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR $GEOSERVER_DATA_DIR /etc/passwd /var/log
+RUN mkdir -p $GEOWEBCACHE_CACHE_DIR && \
+    chgrp -R 0 $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR && \
+    chmod -R g=u $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR /etc/passwd /var/log
 
 ### Containers should NOT run as root as a good practice
 USER 101010
