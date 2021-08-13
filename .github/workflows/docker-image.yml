@@ -17,6 +17,6 @@ jobs:
     - name: Docker login
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
     - name: Build the Docker image
-      run: docker build 2.18/ --tag meteofi/geoserver:2.18
+      run: docker build 2.18/ --tag meteofi/geoserver:2.18 --tag meteofi/geoserver:§(grep -Po '\d.\d+.\d+' 2.18/Dockerfile)
     - name: Docker push
       run: docker push meteofi/geoserver:2.18
