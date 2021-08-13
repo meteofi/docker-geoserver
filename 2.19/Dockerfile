@@ -3,7 +3,7 @@ ARG TOMCAT_VERSION="9"
 FROM docker.io/tomcat:$TOMCAT_VERSION
 LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
 
-ARG GEOSERVER_VERSION="2.19.0"
+ARG GEOSERVER_VERSION="2.19.2"
 ARG GEOSERVER_DATA_DIR="$CATALINA_HOME/webapps/geoserver/data"
 
 # persistent / runtime deps
