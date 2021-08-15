@@ -67,12 +67,13 @@ EXPOSE 8443
 HEALTHCHECK --interval=30s --timeout=10s\
     CMD curl -f "http://localhost:8080/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities" || exit 1
 
-COPY docker-entrypoint.sh /
 COPY server.xml $CATALINA_HOME/conf/
 
 RUN mkdir -p $GEOWEBCACHE_CACHE_DIR && \
     chgrp -R 0 $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR $GEOSERVER_DATA_DIR && \
-    chmod -R g=u $GEOSERVER_DATA_DIR $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR /etc/passwd /var/log
+    chmod -R g=u $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR $GEOSERVER_DATA_DIR /etc/passwd /var/log
+
+COPY docker-entrypoint.sh first-run-config.sh /
 
 ### Containers should NOT run as root as a good practice
 USER 101010
