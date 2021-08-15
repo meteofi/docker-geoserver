@@ -42,8 +42,8 @@ The default administration credentials are:
 
 ## Run with custom GeoServer data directory
 ```
-docker run -d --restart=always --name geoserver -p 80:8080 \
- -v $HOME/geoserver:/usr/share/geoserver/data_dir meteofi/geoserver
+docker volume create geoserver-storage
+docker run -d --name geoserver -p 8080:8080 \
+ -v geoserver-storage:/data/geoserver meteofi/geoserver
 ```
 
-data_dir must have sufficient permissions for container to have read write access.
