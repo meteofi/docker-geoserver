@@ -36,9 +36,7 @@ docker run -d --name geoserver -p 8080:8080  meteofi/geoserver
 ```
 Admin interface: http://localhost:8080/geoserver/web/
 
-The default administration credentials are:
-* Username: admin
-* Password: geoserver
+Check the administration credentials from container output or user GEOSERVER_ADMIN_PASSWORD environmental variable during first run.
 
 ## Run with custom GeoServer data directory
 ```
