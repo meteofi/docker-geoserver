@@ -7,6 +7,7 @@ Additional formats and publication options are available including Web Map Tile 
 * `2.19.2`, `2.19`, `stable`, `latest` ([2.19/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/master/2.19/Dockerfile))
 * `2.18.4`, `2.18`, `maintenance` ([2.18/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/master/2.18/Dockerfile))
 * `2.17.5`, `2.17` ([2.17/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/master/2.17/Dockerfile))
+* `2.16.5`, `2.16` ([2.16/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/master/2.16/Dockerfile))
 
 ### FEATURES
 * build from official [Tomcat 9 docker image](https://hub.docker.com/_/tomcat)
