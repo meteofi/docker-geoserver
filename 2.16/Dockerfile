@@ -59,7 +59,7 @@ HEALTHCHECK --interval=30s --timeout=10s\
 
 #COPY server.xml $CATALINA_HOME/conf/
 
-COPY cors.* .
+COPY cors.* ./
 RUN ./cors.sh
 
 RUN chmod -R g=u /etc/passwd /var/log
