@@ -5,6 +5,7 @@ GEOSERVER_VERSION_MAJOR := $(shell echo $(GEOSERVER_VERSION)|cut -d. -f1-2)
 GEOSERVER_VERSION_2_19 ?= $(shell grep GEOSERVER_VERSION= 2.19/Dockerfile|grep -Eo '\d\.\d+\.\d')
 GEOSERVER_VERSION_2_18 ?= $(shell grep GEOSERVER_VERSION= 2.18/Dockerfile|grep -Eo '\d\.\d+\.\d')
 GEOSERVER_VERSION_2_17 ?= $(shell grep GEOSERVER_VERSION= 2.17/Dockerfile|grep -Eo '\d\.\d+\.\d')
+GEOSERVER_VERSION_2_16 ?= $(shell grep GEOSERVER_VERSION= 2.16/Dockerfile|grep -Eo '\d\.\d+\.\d')
 
 default: build
 
