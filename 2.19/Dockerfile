@@ -5,33 +5,24 @@ LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
 
 ARG GEOSERVER_VERSION="2.19.2"
 ARG GEOSERVER_DATA_DIR="/data/geoserver"
+ARG GEOSERVER_PLUGINS="css grib netcdf pyramid vectortiles wps ysld"
+ARG GEOSERVER_FONTS="Lato Noto%20Sans Open%20Sans Poppins Roboto Ubuntu"
 
-# persistent / runtime deps
-RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 curl patch certbot && rm -r /var/lib/apt/lists/*
-
-ENV NOTO_FONTS="NotoSans-unhinted NotoSerif-unhinted NotoMono-hinted" \
-    GOOGLE_FONTS="Open%20Sans Roboto Lato Ubuntu" \
-    GEOSERVER_VERSION=$GEOSERVER_VERSION \
-    GEOSERVER_DATA_DIR=$GEOSERVER_DATA_DIR \
-    GEOSERVER_PLUGINS="css grib mongodb netcdf pyramid vectortiles wps ysld" \
+ENV GEOSERVER_FONTS=${GEOSERVER_FONTS} \
+    GEOSERVER_VERSION=${GEOSERVER_VERSION} \
+    GEOSERVER_DATA_DIR=${GEOSERVER_DATA_DIR} \
+    GEOSERVER_PLUGINS=${GEOSERVER_PLUGINS} \
     GEOSERVER_NODE_OPTS='id:$host_name' \
     GEOWEBCACHE_CACHE_DIR='/data/gwc' \
     JAVA_OPTS="-Xms128m -XX:SoftRefLRUPolicyMSPerMB=36000 -XX:+UseG1GC" \
     UMASK=002
 
-
-# Install Google Noto fonts
-RUN mkdir -p /usr/share/fonts/truetype/noto && \
-    for FONT in ${NOTO_FONTS}; \
-    do \
-        curl -sS -O https://noto-website-2.storage.googleapis.com/pkgs/${FONT}.zip && \
-    	unzip -o ${FONT}.zip -d /usr/share/fonts/truetype/noto && \
-    	rm -f ${FONT}.zip ; \
-    done
+# persistent / runtime deps
+RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 curl certbot && rm -r /var/lib/apt/lists/*
 
 # Install Google Fonts
 RUN \
-    for FONT in $GOOGLE_FONTS; \
+    for FONT in $GEOSERVER_FONTS; \
     do \
         mkdir -p /usr/share/fonts/truetype/${FONT} && \
         curl -sS -o ${FONT}.zip "https://fonts.google.com/download?family=${FONT}" && \
@@ -39,18 +30,17 @@ RUN \
     	rm -f ${FONT}.zip ; \
     done
 
-COPY web.xml.patch .
-
-RUN mkdir -p /data
-
 # Install GeoServer
 RUN curl -sS -L -O https://sourceforge.net/projects/geoserver/files/GeoServer/$GEOSERVER_VERSION/geoserver-$GEOSERVER_VERSION-war.zip && \
     unzip -d $CATALINA_HOME/webapps/ geoserver-$GEOSERVER_VERSION-war.zip geoserver.war && \
     unzip -d $CATALINA_HOME/webapps/geoserver $CATALINA_HOME/webapps/geoserver.war && \
     rm geoserver-$GEOSERVER_VERSION-war.zip $CATALINA_HOME/webapps/geoserver.war && \
-    patch -i web.xml.patch $CATALINA_HOME/webapps/geoserver/WEB-INF/web.xml && \
     rm -rf $CATALINA_HOME/webapps/geoserver/data/workspaces/tiger $CATALINA_HOME/webapps/geoserver/data/workspaces/nurc $CATALINA_HOME/webapps/geoserver/data/workspaces/sf $CATALINA_HOME/webapps/geoserver/data/workspaces/topp $CATALINA_HOME/webapps/geoserver/data/layergroups/* && \
-    mv $CATALINA_HOME/webapps/geoserver/data /data/geoserver
+    mkdir -p $GEOSERVER_DATA_DIR $GEOWEBCACHE_CACHE_DIR && \
+    mv $CATALINA_HOME/webapps/geoserver/data/* $GEOSERVER_DATA_DIR && \
+    sed -e 's/>PARTIAL-BUFFER2</>SPEED</g' -i $CATALINA_HOME/webapps/geoserver/WEB-INF/web.xml && \
+    chgrp -R 0 $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR $GEOSERVER_DATA_DIR && \
+    chmod -R g=u $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR $GEOSERVER_DATA_DIR
 
 # Install GeoServer Plugins
 RUN for PLUGIN in ${GEOSERVER_PLUGINS}; \
@@ -69,9 +59,22 @@ HEALTHCHECK --interval=30s --timeout=10s\
 
 COPY server.xml $CATALINA_HOME/conf/
 
-RUN mkdir -p $GEOWEBCACHE_CACHE_DIR && \
-    chgrp -R 0 $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR $GEOSERVER_DATA_DIR && \
-    chmod -R g=u $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR $GEOSERVER_DATA_DIR /etc/passwd /var/log
+# Enable CORS
+RUN sed -i '\:</web-app>:i \
+    <filter>\n \
+        <filter-name>CorsFilter</filter-name>\n \
+        <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>\n \
+        <init-param>\n \
+            <param-name>cors.allowed.origins</param-name>\n \
+            <param-value>*</param-value>\n \
+        </init-param>\n \
+    </filter>\n \
+    <filter-mapping>\n \
+        <filter-name>CorsFilter</filter-name>\n \
+        <url-pattern>/*</url-pattern>\n \
+    </filter-mapping>' $CATALINA_HOME/conf/web.xml
+
+RUN chmod -R g=u /etc/passwd /var/log
 
 COPY docker-entrypoint.sh first-run-config.sh /
 
