@@ -59,8 +59,20 @@ HEALTHCHECK --interval=30s --timeout=10s\
 
 #COPY server.xml $CATALINA_HOME/conf/
 
-COPY cors.* ./
-RUN ./cors.sh
+# Enable CORS
+RUN sed -i '\:</web-app>:i \
+    <filter>\n \
+        <filter-name>CorsFilter</filter-name>\n \
+        <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>\n \
+        <init-param>\n \
+            <param-name>cors.allowed.origins</param-name>\n \
+            <param-value>*</param-value>\n \
+        </init-param>\n \
+    </filter>\n \
+    <filter-mapping>\n \
+        <filter-name>CorsFilter</filter-name>\n \
+        <url-pattern>/*</url-pattern>\n \
+    </filter-mapping>' $CATALINA_HOME/conf/web.xml
 
 RUN chmod -R g=u /etc/passwd /var/log
 
