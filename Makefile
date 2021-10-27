@@ -1,7 +1,8 @@
 IMAGE ?= meteofi/geoserver
 NAME ?= geoserver
-GEOSERVER_VERSION ?= 2.19.2
+GEOSERVER_VERSION ?= 2.20.0
 GEOSERVER_VERSION_MAJOR := $(shell echo $(GEOSERVER_VERSION)|cut -d. -f1-2)
+GEOSERVER_VERSION_2_20 ?= $(shell grep GEOSERVER_VERSION= 2.20/Dockerfile|grep -Eo '\d\.\d+\.\d')
 GEOSERVER_VERSION_2_19 ?= $(shell grep GEOSERVER_VERSION= 2.19/Dockerfile|grep -Eo '\d\.\d+\.\d')
 GEOSERVER_VERSION_2_18 ?= $(shell grep GEOSERVER_VERSION= 2.18/Dockerfile|grep -Eo '\d\.\d+\.\d')
 GEOSERVER_VERSION_2_17 ?= $(shell grep GEOSERVER_VERSION= 2.17/Dockerfile|grep -Eo '\d\.\d+\.\d')
@@ -14,6 +15,12 @@ build:
 		--tag "$(IMAGE):$(GEOSERVER_VERSION_MAJOR)" \
 		--tag "$(IMAGE):$(GEOSERVER_VERSION)" \
 		--build-arg GEOSERVER_VERSION=$(GEOSERVER_VERSION) $(GEOSERVER_VERSION_MAJOR)/
+
+build-2.20:
+	docker build --rm \
+		--tag "$(IMAGE):2.20" \
+		--tag "$(IMAGE):$(GEOSERVER_VERSION_2_20)" \
+		--build-arg GEOSERVER_VERSION=$(GEOSERVER_VERSION_2_20) 2.20
 
 build-2.19:
 	docker build --rm \
