@@ -4,9 +4,6 @@ GEOSERVER_VERSION ?= 2.20.0
 GEOSERVER_VERSION_MAJOR := $(shell echo $(GEOSERVER_VERSION)|cut -d. -f1-2)
 GEOSERVER_VERSION_2_20 ?= $(shell grep GEOSERVER_VERSION= 2.20/Dockerfile|grep -Eo '\d\.\d+\.\d')
 GEOSERVER_VERSION_2_19 ?= $(shell grep GEOSERVER_VERSION= 2.19/Dockerfile|grep -Eo '\d\.\d+\.\d')
-GEOSERVER_VERSION_2_18 ?= $(shell grep GEOSERVER_VERSION= 2.18/Dockerfile|grep -Eo '\d\.\d+\.\d')
-GEOSERVER_VERSION_2_17 ?= $(shell grep GEOSERVER_VERSION= 2.17/Dockerfile|grep -Eo '\d\.\d+\.\d')
-GEOSERVER_VERSION_2_16 ?= $(shell grep GEOSERVER_VERSION= 2.16/Dockerfile|grep -Eo '\d\.\d+\.\d')
 
 default: build
 
@@ -30,9 +27,9 @@ build-2.19:
 
 build-2.18:
 	docker build --rm \
+		--tag "$(IMAGE):2.18.5" \
 		--tag "$(IMAGE):2.18" \
-		--tag "$(IMAGE):$(GEOSERVER_VERSION_2_18)" \
-		--build-arg GEOSERVER_VERSION=$(GEOSERVER_VERSION_2_18) 2.18
+		--build-arg GEOSERVER_VERSION=2.18.5 2.18/
 
 build-2.17:
 	docker build --rm \
@@ -45,6 +42,12 @@ build-2.16:
 		--tag "$(IMAGE):2.16.5" \
 		--tag "$(IMAGE):2.16" \
 		--build-arg GEOSERVER_VERSION=2.16.5 2.16/
+
+build-2.15:
+	docker build --rm \
+		--tag "$(IMAGE):2.15.5" \
+		--tag "$(IMAGE):2.15" \
+		--build-arg GEOSERVER_VERSION=2.15.5 2.15/
 
 build-maintenance:
 	docker build --rm \
