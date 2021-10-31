@@ -1,9 +1,18 @@
-version: '3.9'
+version: '3'
 
 services:
-   geoserver:
-     image: meteofi/geoserver:latest
-     ports:
-       - "8080:8080"
-       - "8433:8433"
-     restart: always
+  geoserver:
+    build:
+      context: ./2.20
+      args: 
+        GEOSERVER_PLUGINS: "css pyramid"
+    image: meteofi/geoserver:custom
+    ports:
+      - "8080:8080"
+      - "8433:8433"
+    restart: unless-stopped
+    volumes:
+      - geoserver-storage:/data/geoserver
+
+volumes:
+  geoserver-storage:
