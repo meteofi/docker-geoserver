@@ -24,5 +24,7 @@ jobs:
       run:  docker build 2.17/ --tag meteofi/geoserver:2.17 --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.17/Dockerfile)
     - name: docker build 2.16
       run:  docker build 2.16/ --tag meteofi/geoserver:2.16 --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.16/Dockerfile)
+    - name: docker build 2.15
+      run:  docker build 2.15/ --tag meteofi/geoserver:2.15 --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.15/Dockerfile)
     - name: docker push
       run:  docker push --all-tags meteofi/geoserver
