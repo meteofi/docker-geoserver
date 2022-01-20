@@ -45,7 +45,7 @@ RUN curl -sS -L -O https://sourceforge.net/projects/geoserver/files/GeoServer/$G
 # Install GeoServer Plugins
 RUN for PLUGIN in ${GEOSERVER_PLUGINS}; \
     do \
-      curl -sS -L -O https://sourceforge.net/projects/geoserver/files/GeoServer/$GEOSERVER_VERSION/extensions/geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip && \
+      curl --retry 5 --retry-all-errors -sS -L -O https://sourceforge.net/projects/geoserver/files/GeoServer/$GEOSERVER_VERSION/extensions/geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip && \
       unzip -o geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip -d $CATALINA_HOME/webapps/geoserver/WEB-INF/lib/ && \
       rm geoserver-$GEOSERVER_VERSION-$PLUGIN-plugin.zip ; \
     done
