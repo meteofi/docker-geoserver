@@ -50,7 +50,7 @@ if [ -n "$GEOSERVER_WORKSPACE" ]; then
 fi
 
 if [ -n "$GEOSERVER_DATASTORE_DB" ]; then
-    api POST /workspaces/$GEOSERVER_WORKSPACE/datastores "<dataStore><name>${GEOSERVER_DATASTORE_DB}-db</name><connectionParameters><host>$GEOSERVER_DATASTORE_DB_HOST</host><database>$GEOSERVER_DATASTORE_DB</database><user>$GEOSERVER_DATASTORE_DB_USER</user><passwd>$GEOSERVER_DATASTORE_DB_PASSWORD</passwd><dbtype>postgis</dbtype></connectionParameters></dataStore>"
+    api POST /workspaces/$GEOSERVER_WORKSPACE/datastores "<dataStore><name>${GEOSERVER_DATASTORE_DB}-db</name><connectionParameters><host>$GEOSERVER_DATASTORE_DB_HOST</host><port>5432</port><database>$GEOSERVER_DATASTORE_DB</database><user>$GEOSERVER_DATASTORE_DB_USER</user><passwd>$GEOSERVER_DATASTORE_DB_PASSWORD</passwd><dbtype>postgis</dbtype></connectionParameters></dataStore>"
 fi
 
 # Touch file to indicate configuration is done
