@@ -4,9 +4,9 @@ GeoServer is a OGC compliant implementation of a number of open standards such a
 Additional formats and publication options are available including Web Map Tile Service (WMTS) and extensions for Catalogue Service (CSW) and Web Processing Service (WPS).
 
 ### Supported tags and respective **`Dockerfile`** links
-* `2.20.3`, `2.20`, `stable`, `latest` ([2.20/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/master/2.20/Dockerfile))
-* `2.19.5`, `2.19`, `maintenance` ([2.19/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/master/2.19/Dockerfile))
-* `2.18.5`, `2.18` ([2.18/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/master/2.18/Dockerfile))
+* `2.20.4`, `2.20`, `stable`, `latest` ([2.20/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/master/2.20/Dockerfile))
+* `2.19.6`, `2.19`, `maintenance` ([2.19/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/master/2.19/Dockerfile))
+* `2.18.6`, `2.18` ([2.18/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/master/2.18/Dockerfile))
 * `2.17.5`, `2.17` ([2.17/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/master/2.17/Dockerfile))
 * `2.16.5`, `2.16` ([2.16/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/master/2.16/Dockerfile))
 * `2.15.5`, `2.15` ([2.15/Dockerfile](https://github.com/meteofi/docker-geoserver/blob/master/2.15/Dockerfile))
