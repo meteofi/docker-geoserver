@@ -1,6 +1,6 @@
 IMAGE ?= meteofi/geoserver
 NAME ?= geoserver
-GEOSERVER_VERSION ?= 2.21.1
+GEOSERVER_VERSION ?= 2.21.5
 GEOSERVER_VERSION_MAJOR := $(shell echo $(GEOSERVER_VERSION)|cut -d. -f1-2)
 GEOSERVER_VERSION_2_21 ?= $(shell grep GEOSERVER_VERSION= 2.21/Dockerfile|grep -Eo '\d\.\d+\.\d')
 GEOSERVER_VERSION_2_20 ?= $(shell grep GEOSERVER_VERSION= 2.20/Dockerfile|grep -Eo '\d\.\d+\.\d')
