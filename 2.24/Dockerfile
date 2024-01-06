@@ -48,7 +48,10 @@ RUN curl -sS -L -O https://sourceforge.net/projects/geoserver/files/GeoServer/$G
     unzip -d $CATALINA_HOME/webapps/geoserver $CATALINA_HOME/webapps/geoserver.war && \
     rm geoserver-$GEOSERVER_VERSION-war.zip $CATALINA_HOME/webapps/geoserver.war && \
     mv $CATALINA_HOME/webapps/geoserver/WEB-INF/lib/marlin-*.jar $CATALINA_HOME/lib/marlin.jar && \
-    rm -rf $CATALINA_HOME/webapps/geoserver/data/workspaces/tiger $CATALINA_HOME/webapps/geoserver/data/workspaces/nurc $CATALINA_HOME/webapps/geoserver/data/workspaces/sf $CATALINA_HOME/webapps/geoserver/data/workspaces/topp $CATALINA_HOME/webapps/geoserver/data/layergroups/* && \
+    rm -rf $CATALINA_HOME/webapps/geoserver/data/workspaces/{tiger,nurc,sf,topp,cite} && \
+    rm -rf $CATALINA_HOME/webapps/geoserver/data/data/{nyc,sf,shapefiles,taz_shapes} && \
+    rm -rf $CATALINA_HOME/webapps/geoserver/data/{layergroups,coverages}/* && \
+    rm -rf $CATALINA_HOME/webapps/geoserver/data/styles/tiger_* && \
     mkdir -p $GEOSERVER_DATA_DIR $GEOWEBCACHE_CACHE_DIR && \
     mv $CATALINA_HOME/webapps/geoserver/data/* $GEOSERVER_DATA_DIR && \
     sed -e 's/>PARTIAL-BUFFER2</>SPEED</g' -i $CATALINA_HOME/webapps/geoserver/WEB-INF/web.xml && \
