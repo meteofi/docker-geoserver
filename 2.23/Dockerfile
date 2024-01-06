@@ -18,7 +18,7 @@ ENV GEOSERVER_FONTS=${GEOSERVER_FONTS} \
     UMASK=002
 
 # persistent / runtime deps
-RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 curl certbot unzip && rm -r /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 curl unzip && rm -r /var/lib/apt/lists/*
 
 # Install Google Fonts
 RUN \
@@ -52,12 +52,11 @@ RUN for PLUGIN in ${GEOSERVER_PLUGINS}; \
 
 # Expose GeoServer's default port
 EXPOSE 8080
-EXPOSE 8443
 
 HEALTHCHECK --interval=30s --timeout=10s\
     CMD curl -f "http://localhost:8080/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities" || exit 1
 
-COPY server.xml $CATALINA_HOME/conf/
+# COPY server.xml $CATALINA_HOME/conf/
 
 # Enable CORS
 RUN sed -i '\:</web-app>:i \
