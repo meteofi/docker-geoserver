@@ -10,10 +10,6 @@ fi
 if [ "$1" = 'geoserver' ]; then
   id
   whoami
-  if [ -n "$LETSENCRYPT_DOMAIN" ] && [ -n "$LETSENCRYPT_EMAIL" ]; then
-    certbot --config-dir . --logs-dir /usr/local/tomcat/logs --work-dir /usr/local/tomcat/ --agree-tos -m $LETSENCRYPT_EMAIL -n certonly --standalone -d $LETSENCRYPT_DOMAIN
-    cp -f /usr/local/tomcat/live/$LETSENCRYPT_DOMAIN/* /usr/local/tomcat/conf/
-  fi
 
   # Run configuration if first run
   if [ ! -f $GEOSERVER_DATA_DIR/firstrun.done ]; then
