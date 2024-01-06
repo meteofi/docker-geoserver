@@ -41,7 +41,7 @@ fi
 
 
 if [ -n "$GEOSERVER_PROXY_BASE_URL" ]; then   
-    api PUT  /settings "<settings><proxyBaseUrl>$GEOSERVER_PROXY_BASE_URL</proxyBaseUrl></settings>"
+    api PUT  /settings "<global><settings><proxyBaseUrl>$GEOSERVER_PROXY_BASE_URL</proxyBaseUrl></settings></global>"
 fi
 
 if [ -n "$GEOSERVER_WMS_TITLE" ]; then   
