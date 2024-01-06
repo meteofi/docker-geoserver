@@ -14,10 +14,12 @@ jobs:
     - uses: actions/checkout@v2
     - name: docker login
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
+    - name: docker build 2.24
+      run:  docker build 2.24/ --tag meteofi/geoserver:2.24 --tag meteofi/geoserver:latest --tag meteofi/geoserver:stable  --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.24/Dockerfile)
     - name: docker build 2.23
-      run:  docker build 2.23/ --tag meteofi/geoserver:2.23 --tag meteofi/geoserver:latest --tag meteofi/geoserver:stable  --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.23/Dockerfile)
+      run:  docker build 2.23/ --tag meteofi/geoserver:2.23 --tag meteofi/geoserver:maintenance --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.23/Dockerfile)
     - name: docker build 2.22
-      run:  docker build 2.22/ --tag meteofi/geoserver:2.22 --tag meteofi/geoserver:maintenance --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.22/Dockerfile)
+      run:  docker build 2.22/ --tag meteofi/geoserver:2.22 --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.22/Dockerfile)
     - name: docker build 2.21
       run:  docker build 2.21/ --tag meteofi/geoserver:2.21 --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.21/Dockerfile)
     - name: docker build 2.20
