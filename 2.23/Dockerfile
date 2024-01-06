@@ -14,8 +14,20 @@ ENV GEOSERVER_FONTS=${GEOSERVER_FONTS} \
     GEOSERVER_PLUGINS=${GEOSERVER_PLUGINS} \
     GEOSERVER_NODE_OPTS='id:$host_name' \
     GEOWEBCACHE_CACHE_DIR='/data/gwc' \
-    JAVA_OPTS="-Xms128m -XX:SoftRefLRUPolicyMSPerMB=36000 -XX:+UseG1GC" \
     UMASK=002
+
+#    JAVA_OPTS="-Xms128m -XX:SoftRefLRUPolicyMSPerMB=36000 -XX:+UseG1GC" \
+
+# see https://docs.geoserver.org/stable/en/user/production/container.html
+ENV CATALINA_OPTS="-Xms256m -Xmx1g \
+    -Djava.awt.headless=true -server \
+    -Dfile.encoding=UTF-8 \
+    -Djavax.servlet.request.encoding=UTF-8 \
+    -Djavax.servlet.response.encoding=UTF-8 \
+    -D-XX:SoftRefLRUPolicyMSPerMB=36000 \
+    -Xbootclasspath/a:$CATALINA_HOME/lib/marlin.jar \
+    -Dsun.java2d.renderer=sun.java2d.marlin.DMarlinRenderingEngine \
+    -Dorg.geotools.coverage.jaiext.enabled=true"
 
 # persistent / runtime deps
 RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 curl unzip && rm -r /var/lib/apt/lists/*
@@ -35,6 +47,7 @@ RUN curl -sS -L -O https://sourceforge.net/projects/geoserver/files/GeoServer/$G
     unzip -d $CATALINA_HOME/webapps/ geoserver-$GEOSERVER_VERSION-war.zip geoserver.war && \
     unzip -d $CATALINA_HOME/webapps/geoserver $CATALINA_HOME/webapps/geoserver.war && \
     rm geoserver-$GEOSERVER_VERSION-war.zip $CATALINA_HOME/webapps/geoserver.war && \
+    mv $CATALINA_HOME/webapps/geoserver/WEB-INF/lib/marlin-*.jar $CATALINA_HOME/lib/marlin.jar && \
     rm -rf $CATALINA_HOME/webapps/geoserver/data/workspaces/tiger $CATALINA_HOME/webapps/geoserver/data/workspaces/nurc $CATALINA_HOME/webapps/geoserver/data/workspaces/sf $CATALINA_HOME/webapps/geoserver/data/workspaces/topp $CATALINA_HOME/webapps/geoserver/data/layergroups/* && \
     mkdir -p $GEOSERVER_DATA_DIR $GEOWEBCACHE_CACHE_DIR && \
     mv $CATALINA_HOME/webapps/geoserver/data/* $GEOSERVER_DATA_DIR && \
