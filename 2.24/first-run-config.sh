@@ -40,6 +40,9 @@ EOF
 fi
 
 
+if [ -n "$GEOSERVER_PROXY_BASE_URL" ]; then   
+    api PUT  /settings "<settings><proxyBaseUrl>$GEOSERVER_PROXY_BASE_URL</proxyBaseUrl></settings>"
+fi
 
 if [ -n "$GEOSERVER_WMS_TITLE" ]; then   
     api PUT  /services/wms/settings "<wms><title>$GEOSERVER_WMS_TITLE</title><abstrct>$GEOSERVER_WMS_ABSTRACT</abstrct></wms>"
