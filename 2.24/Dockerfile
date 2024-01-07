@@ -93,6 +93,14 @@ RUN sed -i '\:</web-app>:i \
 
 RUN chmod -R g=u /etc/passwd /var/log
 
+COPY <<-EOT $CATALINA_HOME/webapps/ROOT/index.jsp
+<%
+  final String redirectURL = "/geoserver/web/";
+  response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+  response.setHeader("Location", redirectURL);
+%>
+EOT
+
 COPY docker-entrypoint.sh first-run-config.sh /
 
 ### Containers should NOT run as root as a good practice
