@@ -1,4 +1,4 @@
-ARG TOMCAT_VERSION="9"
+ARG TOMCAT_VERSION="9-jre11"
 
 FROM docker.io/tomcat:$TOMCAT_VERSION
 LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
@@ -19,7 +19,7 @@ ENV GEOSERVER_FONTS=${GEOSERVER_FONTS} \
 #    JAVA_OPTS="-Xms128m -XX:SoftRefLRUPolicyMSPerMB=36000 -XX:+UseG1GC" \
 
 # see https://docs.geoserver.org/stable/en/user/production/container.html
-ENV CATALINA_OPTS="-Xms256m -Xmx1g \
+ENV CATALINA_OPTS="-Xms256m -Xmx2g \
     -Djava.awt.headless=true -server \
     -Dfile.encoding=UTF-8 \
     -Djavax.servlet.request.encoding=UTF-8 \
@@ -73,8 +73,6 @@ EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=10s\
     CMD curl -f "http://localhost:8080/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities" || exit 1
-
-# COPY server.xml $CATALINA_HOME/conf/
 
 # Enable CORS
 RUN sed -i '\:</web-app>:i \
