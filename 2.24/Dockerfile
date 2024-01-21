@@ -1,4 +1,4 @@
-ARG TOMCAT_VERSION="9-jdk11"
+ARG TOMCAT_VERSION="9-jre11"
 
 FROM docker.io/tomcat:$TOMCAT_VERSION
 LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
