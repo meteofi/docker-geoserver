@@ -34,5 +34,13 @@ jobs:
       run:  docker build 2.16/ --tag meteofi/geoserver:2.16 --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.16/Dockerfile)
     - name: docker build 2.15
       run:  docker build 2.15/ --tag meteofi/geoserver:2.15 --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.15/Dockerfile)
+    - name: docker test
+      run: |
+        docker run --name test --rm -p 127.0.0.1:8080:8080 meteofi/geoserver:latest &> debug.log &
+        sleep 45
+        cat debug.log
+        docker logs test
+        curl -f  "http://localhost:8080/geoserver/wms?request=getCapabilities&service=WMS" || exit 1
+        docker stop test
     - name: docker push
       run:  docker push --all-tags meteofi/geoserver
