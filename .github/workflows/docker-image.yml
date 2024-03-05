@@ -43,7 +43,8 @@ jobs:
         docker compose up -d --wait --wait-timeout 300
 
     - name: curl geoserver
-        curl --silent --show-error --fail --include  "http://localhost:8080/geoserver/wms?request=getCapabilities&service=WMS"
+      run: curl --silent --show-error --fail --include  "http://localhost:8080/geoserver/wms?request=getCapabilities&service=WMS"
+
     - name: docker logs geoserver
       run: docker logs geoserver
 
