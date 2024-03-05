@@ -16,43 +16,33 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Login to Docker Hub
+
+    - name: docker login
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-    - name: docker login
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
+
     - name: docker build ${{ matrix.version }}
       run:  docker build ${{ matrix.version }} --tag meteofi/geoserver:${{ matrix.version }} --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' ${{ matrix.version }}/Dockerfile)
 
-    - name: docker build 2.24
-      run:  docker build 2.24/ --tag meteofi/geoserver:2.24 --tag meteofi/geoserver:latest --tag meteofi/geoserver:stable  --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.24/Dockerfile)
-    - name: docker build 2.23
-      run:  docker build 2.23/ --tag meteofi/geoserver:2.23 --tag meteofi/geoserver:maintenance --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.23/Dockerfile)
-    - name: docker build 2.22
-      run:  docker build 2.22/ --tag meteofi/geoserver:2.22 --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.22/Dockerfile)
-    - name: docker build 2.21
-      run:  docker build 2.21/ --tag meteofi/geoserver:2.21 --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.21/Dockerfile)
-    - name: docker build 2.20
-      run:  docker build 2.20/ --tag meteofi/geoserver:2.20 --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.20/Dockerfile)
-    - name: docker build 2.19
-      run:  docker build 2.19/ --tag meteofi/geoserver:2.19 --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.19/Dockerfile)
-    - name: docker build 2.18
-      run:  docker build 2.18/ --tag meteofi/geoserver:2.18 --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.18/Dockerfile)
-    - name: docker build 2.17
-      run:  docker build 2.17/ --tag meteofi/geoserver:2.17 --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.17/Dockerfile)
-    - name: docker build 2.16
-      run:  docker build 2.16/ --tag meteofi/geoserver:2.16 --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.16/Dockerfile)
-    - name: docker build 2.15
-      run:  docker build 2.15/ --tag meteofi/geoserver:2.15 --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.15/Dockerfile)
-    - name: docker test
+    - if: ${{ matrix.version == '2.24' }}
+      name: docker tag
+      run: | 
+        docker tag meteofi/geoserver:${{ matrix.version }} meteofi/geoserver:latest
+        docker tag meteofi/geoserver:${{ matrix.version }} meteofi/geoserver:stable
+
+    - if: ${{ matrix.version == '2.23' }}
+      name: docker tag
+      run: docker tag meteofi/geoserver:${{ matrix.version }} meteofi/geoserver:maintenance
+
+    - name: docker test ${{ matrix.version }}
       run: |
-        docker run --name test --rm -p 127.0.0.1:8080:8080 meteofi/geoserver:latest &> debug.log &
+        docker run --name geoserver${{ matrix.version }} --rm -p 127.0.0.1:8080:8080 meteofi/geoserver:${{ matrix.version }} &> debug.log &
         sleep 60
         cat debug.log
-        docker logs test
+        docker logs geoserver${{ matrix.version }}
         curl -f  "http://localhost:8080/geoserver/wms?request=getCapabilities&service=WMS" || exit 1
-        docker stop test
-    - name: docker push
+        docker stop geoserver${{ matrix.version }}
+    - name: docker push ${{ matrix.version }}
       run:  docker push --all-tags meteofi/geoserver
