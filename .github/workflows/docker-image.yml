@@ -7,13 +7,25 @@ on:
 jobs:
 
   build:
+    strategy:
+      max-parallel: 2
+      matrix:
+        version: [ 2.24, 2.23, 2.22, 2.21, 2.20, 2.19, 2.18, 2.17, 2.16, 2.15 ]
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: docker login
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
+    - name: docker build ${{ matrix.version }}
+      run:  docker build ${{ matrix.version }} --tag meteofi/geoserver:${{ matrix.version }} --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' ${{ matrix.version }}/Dockerfile)
+
     - name: docker build 2.24
       run:  docker build 2.24/ --tag meteofi/geoserver:2.24 --tag meteofi/geoserver:latest --tag meteofi/geoserver:stable  --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' 2.24/Dockerfile)
     - name: docker build 2.23
