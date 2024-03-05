@@ -32,11 +32,6 @@ jobs:
       run: | 
         docker tag meteofi/geoserver:${{ matrix.version }} meteofi/geoserver:latest
         docker tag meteofi/geoserver:${{ matrix.version }} meteofi/geoserver:stable
-        cd ${{ matrix.version }}
-        docker compose up -d --wait --wait-timeout 300
-        curl -f  "http://localhost:8080/geoserver/wms?request=getCapabilities&service=WMS" || exit 1
-        docker logs geoserver
-        docker compose down
 
     - if: ${{ matrix.version == '2.23' }}
       name: docker tag maintenance
@@ -44,12 +39,11 @@ jobs:
 
     - name: docker test
       run: |
-        docker run --name geoserver${{ matrix.version }} --rm -p 127.0.0.1:8080:8080 meteofi/geoserver:${{ matrix.version }} &> debug.log &
-        sleep 60
-        cat debug.log
-        docker logs geoserver${{ matrix.version }}
+        cd ${{ matrix.version }}
+        docker compose up -d --wait --wait-timeout 300
         curl -f  "http://localhost:8080/geoserver/wms?request=getCapabilities&service=WMS" || exit 1
-        docker stop geoserver${{ matrix.version }}
+        docker logs geoserver
+        docker compose down
 
     - name: docker push ${{ matrix.version }}
       run:  docker push --all-tags meteofi/geoserver
