@@ -37,13 +37,18 @@ jobs:
       name: docker tag maintenance
       run: docker tag meteofi/geoserver:${{ matrix.version }} meteofi/geoserver:maintenance
 
-    - name: docker test
+    - name: docker compose up
       run: |
         cd ${{ matrix.version }}
         docker compose up -d --wait --wait-timeout 300
-        curl -f  "http://localhost:8080/geoserver/wms?request=getCapabilities&service=WMS" || exit 1
-        docker logs geoserver
-        docker compose down
 
-    - name: docker push ${{ matrix.version }}
+    - name: curl geoserver
+        curl --silent --show-error --fail --include  "http://localhost:8080/geoserver/wms?request=getCapabilities&service=WMS"
+    - name: docker logs geoserver
+      run: docker logs geoserver
+
+    - name: docker compose down
+      run: docker compose down
+
+    - name: docker push
       run:  docker push --all-tags meteofi/geoserver
