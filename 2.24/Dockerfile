@@ -2,6 +2,8 @@ ARG TOMCAT_VERSION="9-jre11"
 
 FROM docker.io/tomcat:$TOMCAT_VERSION
 LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
+LABEL org.opencontainers.image.source=https://github.com/meteofi/docker-geoserver
+LABEL org.opencontainers.image.description="GeoServer"
 
 ARG GEOSERVER_VERSION="2.24.2"
 ARG GEOSERVER_DATA_DIR="/data/geoserver"
