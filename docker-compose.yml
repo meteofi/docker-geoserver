@@ -3,7 +3,7 @@ version: '3'
 services:
   geoserver:
     build:
-      context: ./2.20
+      context: ./2.24
       args: 
         GEOSERVER_PLUGINS: "css pyramid"
     image: meteofi/geoserver:custom
