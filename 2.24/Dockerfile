@@ -32,9 +32,16 @@ ENV CATALINA_OPTS="-Xms256m -Xmx2g \
     -Dorg.geotools.coverage.jaiext.enabled=true"
 
 # persistent / runtime deps
-RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 curl unzip && rm -r /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 curl unzip fnt && rm -r /var/lib/apt/lists/*
 
 # Install Google Fonts
+RUN \
+    fnt update \
+    for FONT in $GEOSERVER_FONTS; \
+    do \
+        fnt install ${FONT} ; \
+    done
+    
 RUN \
     for FONT in $GEOSERVER_FONTS; \
     do \
