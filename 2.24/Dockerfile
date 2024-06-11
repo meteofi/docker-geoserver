@@ -5,7 +5,7 @@ LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
 LABEL org.opencontainers.image.source=https://github.com/meteofi/docker-geoserver
 LABEL org.opencontainers.image.description="GeoServer"
 
-ARG GEOSERVER_VERSION="2.24.2"
+ARG GEOSERVER_VERSION="2.24.3"
 ARG GEOSERVER_DATA_DIR="/data/geoserver"
 ARG GEOSERVER_PLUGINS="css grib netcdf pyramid vectortiles wps ysld"
 ARG GEOSERVER_FONTS="Lato Noto%20Sans Open%20Sans Poppins Roboto Ubuntu"
