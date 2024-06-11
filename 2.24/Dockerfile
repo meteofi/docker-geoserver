@@ -36,20 +36,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 
 
 # Install Google Fonts
 RUN \
-    fnt update \
+    fnt update  && \
     for FONT in $GEOSERVER_FONTS; \
     do \
-        fnt install ${FONT} ; \
-    done
-    
-RUN \
-    for FONT in $GEOSERVER_FONTS; \
-    do \
-        mkdir -p /usr/share/fonts/truetype/${FONT} && \
-        curl -sS -o ${FONT}.zip "https://fonts.google.com/download?family=${FONT}" && \
-    	unzip -o ${FONT}.zip -d /usr/share/fonts/truetype/${FONT} && \
-    	rm -f ${FONT}.zip ; \
-    done
+        fnt install "${FONT}" ; \
+    done && \
+    fnt list
 
 # Install GeoServer
 RUN <<EOT bash
