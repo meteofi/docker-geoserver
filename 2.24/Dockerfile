@@ -9,7 +9,7 @@ ARG GEOSERVER_VERSION="2.24.3"
 ARG GEOSERVER_DATA_DIR="/data/geoserver"
 ARG GEOSERVER_PLUGINS="css grib netcdf pyramid vectortiles wps ysld"
 ARG GEOSERVER_FONTS="lato notosans opensans poppins roboto ubuntu"
-
+ 
 ENV GEOSERVER_FONTS=${GEOSERVER_FONTS} \
     GEOSERVER_VERSION=${GEOSERVER_VERSION} \
     GEOSERVER_DATA_DIR=${GEOSERVER_DATA_DIR} \
