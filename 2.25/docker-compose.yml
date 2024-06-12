@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  geoserver:
+    build:
+      context: .
+      args: 
+        GEOSERVER_PLUGINS: "css pyramid"
+    image: meteofi/geoserver:2.24
+    container_name: geoserver
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - geoserver-storage:/data/geoserver
+
+volumes:
+  geoserver-storage:
