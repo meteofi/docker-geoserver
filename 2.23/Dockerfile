@@ -2,12 +2,14 @@ ARG TOMCAT_VERSION="9-jre11"
 
 FROM docker.io/tomcat:$TOMCAT_VERSION
 LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
+LABEL org.opencontainers.image.source=https://github.com/meteofi/docker-geoserver
+LABEL org.opencontainers.image.description="GeoServer"
 
 ARG GEOSERVER_VERSION="2.23.5"
 ARG GEOSERVER_DATA_DIR="/data/geoserver"
 ARG GEOSERVER_PLUGINS="css grib netcdf pyramid vectortiles wps ysld"
-ARG GEOSERVER_FONTS="Lato Noto%20Sans Open%20Sans Poppins Roboto Ubuntu"
-
+ARG GEOSERVER_FONTS="lato notosans opensans poppins roboto ubuntu"
+ 
 ENV GEOSERVER_FONTS=${GEOSERVER_FONTS} \
     GEOSERVER_VERSION=${GEOSERVER_VERSION} \
     GEOSERVER_DATA_DIR=${GEOSERVER_DATA_DIR} \
@@ -30,17 +32,16 @@ ENV CATALINA_OPTS="-Xms256m -Xmx2g \
     -Dorg.geotools.coverage.jaiext.enabled=true"
 
 # persistent / runtime deps
-RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 curl unzip && rm -r /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 curl unzip fnt xz-utils binutils && rm -r /var/lib/apt/lists/*
 
 # Install Google Fonts
 RUN \
+    fnt update  && \
     for FONT in $GEOSERVER_FONTS; \
     do \
-        mkdir -p /usr/share/fonts/truetype/${FONT} && \
-        curl -sS -o ${FONT}.zip "https://fonts.google.com/download?family=${FONT}" && \
-    	unzip -o ${FONT}.zip -d /usr/share/fonts/truetype/${FONT} && \
-    	rm -f ${FONT}.zip ; \
-    done
+        fnt install "${FONT}" ; \
+    done && \
+    fnt list
 
 # Install GeoServer
 RUN <<EOT bash
