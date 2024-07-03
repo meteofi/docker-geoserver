@@ -100,6 +100,14 @@ COPY <<-EOT $CATALINA_HOME/webapps/ROOT/index.jsp
 %>
 EOT
 
+COPY <<-EOT $CATALINA_HOME/conf/logging.properties
+# Simplified logging configuration to log everything to console
+handlers = java.util.logging.ConsoleHandler
+java.util.logging.ConsoleHandler.level = INFO
+java.util.logging.ConsoleHandler.formatter = org.apache.juli.OneLineFormatter
+java.util.logging.ConsoleHandler.encoding = UTF-8
+EOT
+
 COPY docker-entrypoint.sh first-run-config.sh /
 
 ### Containers should NOT run as root as a good practice
