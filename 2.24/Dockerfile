@@ -21,7 +21,7 @@ ENV GEOSERVER_FONTS=${GEOSERVER_FONTS} \
 #    JAVA_OPTS="-Xms128m -XX:SoftRefLRUPolicyMSPerMB=36000 -XX:+UseG1GC" \
 
 # see https://docs.geoserver.org/stable/en/user/production/container.html
-ENV CATALINA_OPTS="-Xms256m -Xmx2g \
+ENV CATALINA_OPTS="-Xms256m -Xmx4g \
     -Djava.awt.headless=true -server \
     -Dfile.encoding=UTF-8 \
     -Djavax.servlet.request.encoding=UTF-8 \
@@ -98,6 +98,14 @@ COPY <<-EOT $CATALINA_HOME/webapps/ROOT/index.jsp
   response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
   response.setHeader("Location", redirectURL);
 %>
+EOT
+
+COPY <<-EOT $CATALINA_HOME/conf/logging.properties
+# Simplified logging configuration to log everything to console
+handlers = java.util.logging.ConsoleHandler
+java.util.logging.ConsoleHandler.level = INFO
+java.util.logging.ConsoleHandler.formatter = org.apache.juli.OneLineFormatter
+java.util.logging.ConsoleHandler.encoding = UTF-8
 EOT
 
 COPY docker-entrypoint.sh first-run-config.sh /
