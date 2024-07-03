@@ -51,12 +51,9 @@ RUN for PLUGIN in ${GEOSERVER_PLUGINS}; \
 
 # Expose GeoServer's default port
 EXPOSE 8080
-EXPOSE 8443
 
 HEALTHCHECK --interval=30s --timeout=10s\
     CMD curl -f "http://localhost:8080/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities" || exit 1
-
-COPY server.xml $CATALINA_HOME/conf/
 
 # Enable CORS
 RUN sed -i '\:</web-app>:i \
