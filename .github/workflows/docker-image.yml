@@ -15,7 +15,7 @@ jobs:
       max-parallel: 2
       fail-fast: false
       matrix:
-        version: [ 2.25, 2.24, 2.23, 2.22, 2.21, '2.20', 2.19, 2.18, 2.17, 2.16, 2.15 ]
+        version: [ 2.26 2.25, 2.24, 2.23, 2.22, 2.21, '2.20', 2.19, 2.18, 2.17, 2.16, 2.15 ]
 
     runs-on: ubuntu-latest
     defaults:
@@ -34,13 +34,13 @@ jobs:
     - name: docker build
       run:  docker build . --tag meteofi/geoserver:${{ matrix.version }} --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' Dockerfile)
 
-    - if: ${{ matrix.version == '2.25' }}
+    - if: ${{ matrix.version == '2.26' }}
       name: docker tag latest stable
       run: | 
         docker tag meteofi/geoserver:${{ matrix.version }} meteofi/geoserver:latest
         docker tag meteofi/geoserver:${{ matrix.version }} meteofi/geoserver:stable
 
-    - if: ${{ matrix.version == '2.24' }}
+    - if: ${{ matrix.version == '2.25' }}
       name: docker tag maintenance
       run: docker tag meteofi/geoserver:${{ matrix.version }} meteofi/geoserver:maintenance
 
