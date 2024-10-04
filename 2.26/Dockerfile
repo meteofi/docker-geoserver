@@ -1,14 +1,17 @@
+# Build-time arguments
 ARG TOMCAT_VERSION="9.0-jre17"
-
-FROM docker.io/tomcat:$TOMCAT_VERSION
-LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
-LABEL org.opencontainers.image.source=https://github.com/meteofi/docker-geoserver
-LABEL org.opencontainers.image.description="GeoServer"
-
 ARG GEOSERVER_VERSION="2.26.0"
 ARG GEOSERVER_DATA_DIR="/data/geoserver"
 ARG GEOSERVER_PLUGINS="css grib netcdf pyramid vectortiles wps ysld"
 ARG GEOSERVER_FONTS="lato notosans opensans poppins roboto ubuntu"
+
+# Use official Tomcat image as base
+FROM tomcat:${TOMCAT_VERSION}
+
+# Maintainer information
+LABEL maintainer="Mikko Rauhala <mikko@meteo.fi>" \
+      org.opencontainers.image.source="https://github.com/meteofi/docker-geoserver" \
+      org.opencontainers.image.description="GeoServer"
  
 ENV GEOSERVER_FONTS=${GEOSERVER_FONTS} \
     GEOSERVER_VERSION=${GEOSERVER_VERSION} \
@@ -34,21 +37,18 @@ ENV CATALINA_OPTS="-Xms256m -Xmx4g \
 # persistent / runtime deps
 RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4-1 curl unzip fnt xz-utils binutils && rm -r /var/lib/apt/lists/*
 
-# Install Google Fonts
-RUN \
-    fnt update  && \
-    for FONT in $GEOSERVER_FONTS; \
-    do \
-        fnt install "${FONT}" ; \
-    done && \
-    fnt list
-
 # Install GeoServer
 RUN <<EOT bash
-    curl -sS -L -O https://sourceforge.net/projects/geoserver/files/GeoServer/$GEOSERVER_VERSION/geoserver-$GEOSERVER_VERSION-war.zip
-    unzip -d $CATALINA_HOME/webapps/ geoserver-$GEOSERVER_VERSION-war.zip geoserver.war
-    unzip -d $CATALINA_HOME/webapps/geoserver $CATALINA_HOME/webapps/geoserver.war
-    rm geoserver-$GEOSERVER_VERSION-war.zip $CATALINA_HOME/webapps/geoserver.war
+    set -e
+    fnt update
+    for FONT in ${GEOSERVER_FONTS}; do
+        fnt install "${FONT}";
+    done
+    fnt list
+    curl -sSL -o geoserver.zip "https://sourceforge.net/projects/geoserver/files/GeoServer/${GEOSERVER_VERSION}/geoserver-${GEOSERVER_VERSION}-war.zip/download"
+    unzip -d ${CATALINA_HOME}/webapps/ geoserver.zip geoserver.war
+    unzip -d ${CATALINA_HOME}/webapps/geoserver ${CATALINA_HOME}/webapps/geoserver.war
+    rm geoserver.zip ${CATALINA_HOME}/webapps/geoserver.war
     mv $CATALINA_HOME/webapps/geoserver/WEB-INF/lib/marlin-*.jar $CATALINA_HOME/lib/marlin.jar
     rm -rf $CATALINA_HOME/webapps/geoserver/data/workspaces/{tiger,nurc,sf,topp,cite,sde}
     rm -rf $CATALINA_HOME/webapps/geoserver/data/data/{nyc,sf,shapefiles,taz_shapes}
@@ -58,7 +58,7 @@ RUN <<EOT bash
     mv $CATALINA_HOME/webapps/geoserver/data/* $GEOSERVER_DATA_DIR
     sed -e 's/>PARTIAL-BUFFER2</>SPEED</g' -i $CATALINA_HOME/webapps/geoserver/WEB-INF/web.xml
     chgrp -R 0 $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR $GEOSERVER_DATA_DIR 
-    chmod -R g=u $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR $GEOSERVER_DATA_DIR
+    chmod -R g=u ${CATALINA_HOME} ${GEOWEBCACHE_CACHE_DIR} ${GEOSERVER_DATA_DIR}
 EOT
 
 # Install GeoServer Plugins
