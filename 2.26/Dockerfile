@@ -1,9 +1,5 @@
 # Build-time arguments
 ARG TOMCAT_VERSION="9.0-jre17"
-ARG GEOSERVER_VERSION="2.26.0"
-ARG GEOSERVER_DATA_DIR="/data/geoserver"
-ARG GEOSERVER_PLUGINS="css grib netcdf pyramid vectortiles wps ysld"
-ARG GEOSERVER_FONTS="lato notosans opensans poppins roboto ubuntu"
 
 # Use official Tomcat image as base
 FROM tomcat:${TOMCAT_VERSION}
@@ -12,7 +8,12 @@ FROM tomcat:${TOMCAT_VERSION}
 LABEL maintainer="Mikko Rauhala <mikko@meteo.fi>" \
       org.opencontainers.image.source="https://github.com/meteofi/docker-geoserver" \
       org.opencontainers.image.description="GeoServer"
- 
+
+ARG GEOSERVER_VERSION="2.26.0"
+ARG GEOSERVER_DATA_DIR="/data/geoserver"
+ARG GEOSERVER_PLUGINS="css grib netcdf pyramid vectortiles wps ysld"
+ARG GEOSERVER_FONTS="lato notosans opensans poppins roboto ubuntu"
+      
 ENV GEOSERVER_FONTS=${GEOSERVER_FONTS} \
     GEOSERVER_VERSION=${GEOSERVER_VERSION} \
     GEOSERVER_DATA_DIR=${GEOSERVER_DATA_DIR} \
