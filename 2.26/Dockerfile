@@ -36,16 +36,29 @@ ENV CATALINA_OPTS="-Xms256m -Xmx4g \
     -Dorg.geotools.coverage.jaiext.enabled=true"
 
 # persistent / runtime deps
-RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4-1 curl unzip fnt xz-utils binutils && rm -r /var/lib/apt/lists/*
+RUN apt-get update \ 
+    && apt-get install -y --no-install-recommends \
+        binutils \
+        curl \
+        fnt \
+        libnetcdf-c++4-1  \
+        unzip \
+        xz-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Google Fonts
+RUN \
+    echo "Installing Google Fonts ${GEOSERVER_FONTS}" && \
+    fnt update  && \
+    for FONT in $GEOSERVER_FONTS; \
+    do \
+        echo "Installing ${FONT}" && \
+        fnt install "${FONT}" ; \
+    done && \
+    fnt list
 
 # Install GeoServer
 RUN <<EOT bash
-    set -e
-    fnt update
-    for FONT in ${GEOSERVER_FONTS}; do
-        fnt install "${FONT}";
-    done
-    fnt list
     curl -sSL -o geoserver.zip "https://sourceforge.net/projects/geoserver/files/GeoServer/${GEOSERVER_VERSION}/geoserver-${GEOSERVER_VERSION}-war.zip/download"
     unzip -d ${CATALINA_HOME}/webapps/ geoserver.zip geoserver.war
     unzip -d ${CATALINA_HOME}/webapps/geoserver ${CATALINA_HOME}/webapps/geoserver.war
