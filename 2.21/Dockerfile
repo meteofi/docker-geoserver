@@ -14,11 +14,23 @@ ENV GEOSERVER_FONTS=${GEOSERVER_FONTS} \
     GEOSERVER_PLUGINS=${GEOSERVER_PLUGINS} \
     GEOSERVER_NODE_OPTS='id:$host_name' \
     GEOWEBCACHE_CACHE_DIR='/data/gwc' \
-    JAVA_OPTS="-Xms128m -XX:SoftRefLRUPolicyMSPerMB=36000 -XX:+UseG1GC" \
     UMASK=002
 
+#    JAVA_OPTS="-Xms128m -XX:SoftRefLRUPolicyMSPerMB=36000 -XX:+UseG1GC" \
+
+# see https://docs.geoserver.org/stable/en/user/production/container.html
+ENV CATALINA_OPTS="-Xms256m -Xmx2g \
+    -Djava.awt.headless=true -server \
+    -Dfile.encoding=UTF-8 \
+    -Djavax.servlet.request.encoding=UTF-8 \
+    -Djavax.servlet.response.encoding=UTF-8 \
+    -D-XX:SoftRefLRUPolicyMSPerMB=36000 \
+    -Xbootclasspath/a:$CATALINA_HOME/lib/marlin.jar \
+    -Dsun.java2d.renderer=sun.java2d.marlin.DMarlinRenderingEngine \
+    -Dorg.geotools.coverage.jaiext.enabled=true"
+
 # persistent / runtime deps
-RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4 curl unzip fnt xz-utils binutils && rm -r /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends libnetcdf-c++4-1 curl unzip fnt xz-utils binutils && rm -r /var/lib/apt/lists/*
 
 # Install Google Fonts
 RUN \
@@ -30,16 +42,22 @@ RUN \
     fnt list
 
 # Install GeoServer
-RUN curl -sS -L -O https://sourceforge.net/projects/geoserver/files/GeoServer/$GEOSERVER_VERSION/geoserver-$GEOSERVER_VERSION-war.zip && \
-    unzip -d $CATALINA_HOME/webapps/ geoserver-$GEOSERVER_VERSION-war.zip geoserver.war && \
-    unzip -d $CATALINA_HOME/webapps/geoserver $CATALINA_HOME/webapps/geoserver.war && \
-    rm geoserver-$GEOSERVER_VERSION-war.zip $CATALINA_HOME/webapps/geoserver.war && \
-    rm -rf $CATALINA_HOME/webapps/geoserver/data/workspaces/tiger $CATALINA_HOME/webapps/geoserver/data/workspaces/nurc $CATALINA_HOME/webapps/geoserver/data/workspaces/sf $CATALINA_HOME/webapps/geoserver/data/workspaces/topp $CATALINA_HOME/webapps/geoserver/data/layergroups/* && \
-    mkdir -p $GEOSERVER_DATA_DIR $GEOWEBCACHE_CACHE_DIR && \
-    mv $CATALINA_HOME/webapps/geoserver/data/* $GEOSERVER_DATA_DIR && \
-    sed -e 's/>PARTIAL-BUFFER2</>SPEED</g' -i $CATALINA_HOME/webapps/geoserver/WEB-INF/web.xml && \
-    chgrp -R 0 $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR $GEOSERVER_DATA_DIR && \
+RUN <<EOT bash
+    curl -sS -L -O https://sourceforge.net/projects/geoserver/files/GeoServer/$GEOSERVER_VERSION/geoserver-$GEOSERVER_VERSION-war.zip
+    unzip -d $CATALINA_HOME/webapps/ geoserver-$GEOSERVER_VERSION-war.zip geoserver.war
+    unzip -d $CATALINA_HOME/webapps/geoserver $CATALINA_HOME/webapps/geoserver.war
+    rm geoserver-$GEOSERVER_VERSION-war.zip $CATALINA_HOME/webapps/geoserver.war
+    mv $CATALINA_HOME/webapps/geoserver/WEB-INF/lib/marlin-*.jar $CATALINA_HOME/lib/marlin.jar
+    rm -rf $CATALINA_HOME/webapps/geoserver/data/workspaces/{tiger,nurc,sf,topp,cite,sde}
+    rm -rf $CATALINA_HOME/webapps/geoserver/data/data/{nyc,sf,shapefiles,taz_shapes}
+    rm -rf $CATALINA_HOME/webapps/geoserver/data/{layergroups,coverages}/*
+    rm -rf $CATALINA_HOME/webapps/geoserver/data/styles/tiger_* 
+    mkdir -p $GEOSERVER_DATA_DIR $GEOWEBCACHE_CACHE_DIR
+    mv $CATALINA_HOME/webapps/geoserver/data/* $GEOSERVER_DATA_DIR
+    sed -e 's/>PARTIAL-BUFFER2</>SPEED</g' -i $CATALINA_HOME/webapps/geoserver/WEB-INF/web.xml
+    chgrp -R 0 $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR $GEOSERVER_DATA_DIR 
     chmod -R g=u $CATALINA_HOME $GEOWEBCACHE_CACHE_DIR $GEOSERVER_DATA_DIR
+EOT
 
 # Install GeoServer Plugins
 RUN for PLUGIN in ${GEOSERVER_PLUGINS}; \
@@ -71,6 +89,14 @@ RUN sed -i '\:</web-app>:i \
     </filter-mapping>' $CATALINA_HOME/conf/web.xml
 
 RUN chmod -R g=u /etc/passwd /var/log
+
+COPY <<-EOT $CATALINA_HOME/webapps/ROOT/index.jsp
+<%
+  final String redirectURL = "/geoserver/web/";
+  response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+  response.setHeader("Location", redirectURL);
+%>
+EOT
 
 COPY docker-entrypoint.sh first-run-config.sh /
 
