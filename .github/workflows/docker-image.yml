@@ -39,13 +39,13 @@ jobs:
     - name: docker build
       run:  docker build . --tag meteofi/geoserver:${{ matrix.version }} --tag meteofi/geoserver:$(grep -Po '(?<=GEOSERVER_VERSION\=\")\d.\d+.\d+' Dockerfile)
 
-    - if: ${{ matrix.version == '2.26' }}
+    - if: ${{ matrix.version == '2.27' }}
       name: docker tag latest stable
       run: | 
         docker tag meteofi/geoserver:${{ matrix.version }} meteofi/geoserver:latest
         docker tag meteofi/geoserver:${{ matrix.version }} meteofi/geoserver:stable
 
-    - if: ${{ matrix.version == '2.25' }}
+    - if: ${{ matrix.version == '2.26' }}
       name: docker tag maintenance
       run: docker tag meteofi/geoserver:${{ matrix.version }} meteofi/geoserver:maintenance
 
