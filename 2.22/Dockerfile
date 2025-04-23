@@ -3,7 +3,7 @@ ARG TOMCAT_VERSION="9.0-jre11"
 FROM docker.io/tomcat:$TOMCAT_VERSION
 LABEL maintainer "Mikko Rauhala <mikko@meteo.fi>"
 
-ARG GEOSERVER_VERSION="2.22.5"
+ARG GEOSERVER_VERSION="2.22.6"
 ARG GEOSERVER_DATA_DIR="/data/geoserver"
 ARG GEOSERVER_PLUGINS="css grib netcdf pyramid vectortiles wps ysld"
 ARG GEOSERVER_FONTS="lato notosans opensans poppins roboto ubuntu"
