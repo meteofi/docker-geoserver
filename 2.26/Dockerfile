@@ -25,7 +25,7 @@ ENV GEOSERVER_FONTS=${GEOSERVER_FONTS} \
 #    JAVA_OPTS="-Xms128m -XX:SoftRefLRUPolicyMSPerMB=36000 -XX:+UseG1GC" \
 
 # see https://docs.geoserver.org/stable/en/user/production/container.html
-ENV CATALINA_OPTS="-Xms256m -Xmx4g \
+ENV CATALINA_OPTS="-Xms8g -Xmx32g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:G1HeapRegionSize=32m -XX:+UnlockExperimentalVMOptions -XX:+UseStringDeduplication -XX:MaxMetaspaceSize=512m -XX:+DisableExplicitGC -XX:+UseCompressedOops \
     -Djava.awt.headless=true -server \
     -Dfile.encoding=UTF-8 \
     -Djavax.servlet.request.encoding=UTF-8 \
@@ -34,6 +34,8 @@ ENV CATALINA_OPTS="-Xms256m -Xmx4g \
     -Xbootclasspath/a:$CATALINA_HOME/lib/marlin.jar \
     -Dsun.java2d.renderer=sun.java2d.marlin.DMarlinRenderingEngine \
     -Dorg.geotools.coverage.jaiext.enabled=true"
+
+#-Xms8g -Xmx32g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:G1HeapRegionSize=32m -XX:+UnlockExperimentalVMOptions -XX:+UseStringDeduplication -XX:MaxMetaspaceSize=512m -XX:+DisableExplicitGC -XX:+UseCompressedOops
 
 # persistent / runtime deps
 RUN apt-get update \ 
