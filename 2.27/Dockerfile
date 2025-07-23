@@ -9,7 +9,7 @@ LABEL maintainer="Mikko Rauhala <mikko@meteo.fi>" \
       org.opencontainers.image.source="https://github.com/meteofi/docker-geoserver" \
       org.opencontainers.image.description="GeoServer"
 
-ARG GEOSERVER_VERSION="2.27.1"
+ARG GEOSERVER_VERSION="2.27.2"
 ARG GEOSERVER_DATA_DIR="/data/geoserver"
 ARG GEOSERVER_PLUGINS="css grib netcdf pyramid vectortiles wps ysld"
 ARG GEOSERVER_FONTS="lato notosans opensans poppins roboto ubuntu"
@@ -20,20 +20,21 @@ ENV GEOSERVER_FONTS=${GEOSERVER_FONTS} \
     GEOSERVER_PLUGINS=${GEOSERVER_PLUGINS} \
     GEOSERVER_NODE_OPTS='id:$host_name' \
     GEOWEBCACHE_CACHE_DIR='/data/gwc' \
-    UMASK=002
-
-#    JAVA_OPTS="-Xms128m -XX:SoftRefLRUPolicyMSPerMB=36000 -XX:+UseG1GC" \
+    UMASK=002 \
+    FONTCONFIG_PATH=/tmp/fontconfig \
+    FC_CACHE_DIR=/tmp/fontconfig
 
 # see https://docs.geoserver.org/stable/en/user/production/container.html
-ENV CATALINA_OPTS="-Xms256m -Xmx4g \
-    -Djava.awt.headless=true -server \
-    -Dfile.encoding=UTF-8 \
-    -Djavax.servlet.request.encoding=UTF-8 \
-    -Djavax.servlet.response.encoding=UTF-8 \
-    -D-XX:SoftRefLRUPolicyMSPerMB=36000 \
-    -Xbootclasspath/a:$CATALINA_HOME/lib/marlin.jar \
-    -Dsun.java2d.renderer=sun.java2d.marlin.DMarlinRenderingEngine \
-    -Dorg.geotools.coverage.jaiext.enabled=true"
+ENV CATALINA_OPTS="-Xms12g -Xmx48g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:G1HeapRegionSize=32m -XX:+UseStringDeduplication -XX:MaxMetaspaceSize=1g -XX:+DisableExplicitGC -XX:MaxDirectMemorySize=4g \
+-Djava.awt.headless=true -server \
+-Dfile.encoding=UTF-8 \
+-Djavax.servlet.request.encoding=UTF-8 \
+-Djavax.servlet.response.encoding=UTF-8 \
+-XX:SoftRefLRUPolicyMSPerMB=36000 \
+-Xbootclasspath/a:$CATALINA_HOME/lib/marlin.jar \
+-Dsun.java2d.renderer=sun.java2d.marlin.DMarlinRenderingEngine \
+-Dorg.geotools.coverage.jaiext.enabled=true \
+-Dorg.geoserver.wms.max_rendering_memory=2097152"
 
 # persistent / runtime deps
 RUN apt-get update \ 
@@ -45,6 +46,10 @@ RUN apt-get update \
         unzip \
         xz-utils \
     && rm -rf /var/lib/apt/lists/*
+
+# Create the directory
+RUN mkdir -p /tmp/fontconfig && \
+    chmod 777 /tmp/fontconfig
 
 # Install Google Fonts
 RUN \

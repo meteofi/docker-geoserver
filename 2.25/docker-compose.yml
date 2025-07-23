@@ -6,7 +6,7 @@ services:
       context: .
       args: 
         GEOSERVER_PLUGINS: "css pyramid"
-    image: meteofi/geoserver:2.24
+    image: meteofi/geoserver:2.25
     container_name: geoserver
     restart: unless-stopped
     ports:
